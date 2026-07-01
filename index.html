@@ -929,17 +929,17 @@
             font-size: 12px;
             padding: 6px 12px;
             color: #fff;
-            background: rgba(255,255,255,.08);
+            background: rgba(255, 255, 255, .08);
         }
         .topbar .actions .btn:hover {
-            background: rgba(255,255,255,.16);
+            background: rgba(255, 255, 255, .16);
         }
         .topbar .actions .btn-ghost {
             background: transparent;
             color: #ccc;
         }
         .topbar .actions .btn-ghost:hover {
-            background: rgba(255,255,255,.08);
+            background: rgba(255, 255, 255, .08);
             color: #fff;
         }
         .topbar .actions .btn-primary {
@@ -1807,6 +1807,226 @@
             border-color: var(--accent);
             background: rgba(var(--accent-rgb), .08);
             color: var(--accent);
+        }
+
+        /* ============================================================
+           CUSTOM BUILDER TAB
+           ============================================================ */
+        .builder-section-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 8px 0 12px;
+        }
+        .builder-section-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            transition: all var(--transition);
+            cursor: grab;
+            user-select: none;
+        }
+        .builder-section-item:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+        .builder-section-item.dragging {
+            opacity: .5;
+            border-style: dashed;
+        }
+        .builder-section-item .drag-handle {
+            cursor: grab;
+            color: var(--text-secondary);
+            opacity: .4;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .builder-section-item .drag-handle:active {
+            cursor: grabbing;
+        }
+        .builder-section-item .toggle {
+            flex-shrink: 0;
+            width: 32px;
+            height: 18px;
+            border-radius: 12px;
+            background: var(--border-color);
+            cursor: pointer;
+            position: relative;
+            transition: background var(--transition);
+            border: none;
+        }
+        .builder-section-item .toggle.on {
+            background: var(--accent);
+        }
+        .builder-section-item .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform var(--transition);
+        }
+        .builder-section-item .toggle.on::after {
+            transform: translateX(14px);
+        }
+        .builder-section-item .label {
+            flex: 1;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .builder-section-item .label .sub {
+            font-size: 10px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-left: 6px;
+        }
+        .builder-section-item .actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .builder-section-item .actions .icon-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+        }
+        .builder-section-item .actions .icon-btn:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+        .builder-section-item .actions .icon-btn.danger:hover {
+            color: var(--danger);
+            background: rgba(220, 38, 38, .08);
+        }
+
+        .builder-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 8px 0 12px;
+        }
+        .builder-layout-option {
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            background: var(--card-bg);
+        }
+        .builder-layout-option:hover {
+            border-color: var(--accent);
+        }
+        .builder-layout-option.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(var(--accent-rgb), .06);
+        }
+        .builder-layout-option .icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .builder-style-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 8px 0 12px;
+        }
+        .builder-style-group .field {
+            margin-bottom: 4px;
+        }
+        .builder-style-group .field label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            color: var(--text-secondary);
+        }
+        .builder-style-group .field select,
+        .builder-style-group .field input {
+            padding: 5px 8px;
+            font-size: 12px;
+        }
+
+        .builder-save-area {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        .builder-save-area input {
+            flex: 1;
+            min-width: 120px;
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 12px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .builder-saved-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 8px 0 4px;
+        }
+        .builder-saved-list .pill {
+            padding: 3px 12px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--badge-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .builder-saved-list .pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .builder-saved-list .pill.active {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), .06);
+            color: var(--accent);
+        }
+        .builder-saved-list .pill .del {
+            cursor: pointer;
+            opacity: .4;
+            font-size: 12px;
+            transition: opacity var(--transition);
+        }
+        .builder-saved-list .pill .del:hover {
+            opacity: 1;
+            color: var(--danger);
         }
 
         /* ============================================================
@@ -2690,6 +2910,12 @@
             .shortcuts-helper {
                 display: none !important;
             }
+            .builder-layout-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .builder-style-group {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         @media(max-width:480px) {
             .topbar .actions .btn {
@@ -2739,6 +2965,12 @@
                 padding: 16px;
                 margin: 10px;
             }
+            .builder-layout-grid {
+                grid-template-columns: 1fr;
+            }
+            .builder-style-group {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Floating Action Button (mobile) */
@@ -2785,6 +3017,31 @@
                 background-position: 200% 0;
             }
         }
+
+        /* Undo/Redo buttons in preview toolbar */
+        .history-btn {
+            border: none;
+            background: var(--badge-bg);
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .history-btn:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+        .history-btn:disabled {
+            opacity: .3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -2819,6 +3076,7 @@
                     <span class="badge badge-accent">⭐ 100% Free</span>
                     <span class="badge badge-success">🚀 Unlimited PDF</span>
                     <span class="badge badge-ats">🤖 ATS Friendly</span>
+                    <span class="badge badge-premium">✨ Custom Builder</span>
                 </div>
                 <h1>Create Professional <span class="highlight">ATS-Friendly</span> Resumes</h1>
                 <p>Build a stunning resume in minutes with 20+ premium templates, real-time preview, and one-click PDF export — completely free.</p>
@@ -2833,6 +3091,8 @@
                     <span>Dark Mode</span>
                     <span>Import / Export</span>
                     <span>Mobile Responsive</span>
+                    <span>Undo / Redo</span>
+                    <span>Custom Builder</span>
                 </div>
             </div>
             <div class="hero-visual">
@@ -2887,6 +3147,8 @@
                 <div class="feature-card"><div class="icon">🌙</div><h3>Dark Mode</h3><p>Work comfortably in any lighting.</p></div>
                 <div class="feature-card"><div class="icon">📤</div><h3>Import / Export</h3><p>JSON backup and restore your data.</p></div>
                 <div class="feature-card"><div class="icon">📊</div><h3>ATS Score Checker</h3><p>See how your resume scores.</p></div>
+                <div class="feature-card"><div class="icon">🛠️</div><h3>Custom Builder</h3><p>Build your own layout with drag & drop.</p></div>
+                <div class="feature-card"><div class="icon">↩️</div><h3>Undo / Redo</h3><p>100-step history with keyboard shortcuts.</p></div>
             </div>
         </section>
 
@@ -2959,6 +3221,10 @@
             <div class="faq-item" onclick="toggleFAQ(this)">
                 <div class="q"><span>Can I create multiple resumes?</span><span class="icon">▼</span></div>
                 <div class="a">Yes, you can create unlimited resumes. Use the "My Resumes" manager to organize, duplicate, and archive them.</div>
+            </div>
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="q"><span>What is the Custom Builder?</span><span class="icon">▼</span></div>
+                <div class="a">The Custom Builder lets you design your own resume layout with drag-and-drop. Reorder sections, choose one/two-column layouts, and save unlimited custom templates.</div>
             </div>
         </section>
 
@@ -3247,12 +3513,112 @@
                         <div id="analyticsBox" style="font-size:13px;"></div>
                     </div>
                 </div>
+
+                <!-- ============================================================
+                CUSTOM BUILDER TAB
+                ============================================================ -->
+                <div class="section" data-tab="custom-builder">
+                    <h2>🛠️ Custom Builder <span class="badge badge-premium" style="font-size:9px;padding:0 8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;">PREMIUM</span></h2>
+                    <p class="hint">Design your own resume layout with drag & drop. Reorder, show/hide, and style every section.</p>
+
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px;">
+                        <button class="btn btn-sm btn-primary" onclick="applyCustomTemplate()">Apply to Resume</button>
+                        <button class="btn btn-sm btn-secondary" onclick="saveCustomTemplate()">💾 Save Template</button>
+                        <button class="btn btn-sm btn-secondary" onclick="resetCustomTemplate()">↺ Reset</button>
+                    </div>
+
+                    <!-- Saved Templates -->
+                    <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin:4px 0 6px;">Saved Custom Templates</div>
+                    <div class="builder-saved-list" id="builderSavedList"></div>
+
+                    <div style="margin:12px 0 8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <input id="builderTemplateName" placeholder="Template name..." style="flex:1;min-width:120px;padding:5px 10px;border:1px solid var(--border-color);border-radius:6px;font-size:12px;background:var(--input-bg);color:var(--text-primary);font-family:inherit;">
+                        <button class="btn btn-sm btn-success" onclick="saveCustomTemplate()">Save</button>
+                    </div>
+
+                    <!-- Layout -->
+                    <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin:8px 0 4px;">Layout</div>
+                    <div class="builder-layout-grid">
+                        <div class="builder-layout-option active" data-layout="one-column" onclick="setBuilderLayout('one-column')">
+                            <span class="icon">▣</span> One Column
+                        </div>
+                        <div class="builder-layout-option" data-layout="two-column" onclick="setBuilderLayout('two-column')">
+                            <span class="icon">▦</span> Two Column
+                        </div>
+                    </div>
+
+                    <!-- Sections -->
+                    <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin:8px 0 4px;">Sections <span style="font-weight:400;color:var(--text-secondary);font-size:10px;">(drag to reorder, toggle to show/hide)</span></div>
+                    <div class="builder-section-list" id="builderSectionList"></div>
+
+                    <!-- Add Custom Section -->
+                    <button class="add-btn" onclick="addBuilderCustomSection()" style="margin:6px 0 12px;">+ Add Custom Section</button>
+
+                    <!-- Styling -->
+                    <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin:12px 0 4px;">Styling Overrides</div>
+                    <div class="builder-style-group">
+                        <div class="field"><label>Font</label>
+                            <select id="builderFont" onchange="setBuilderStyle('font',this.value)">
+                                <option value="'Inter',sans-serif">Inter</option>
+                                <option value="'Georgia',serif">Georgia</option>
+                                <option value="'Poppins','Inter',sans-serif">Poppins</option>
+                                <option value="'Roboto',sans-serif">Roboto</option>
+                                <option value="'Lato',sans-serif">Lato</option>
+                                <option value="'Open Sans',sans-serif">Open Sans</option>
+                                <option value="'Montserrat',sans-serif">Montserrat</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>Accent Color</label>
+                            <input type="color" id="builderAccent" value="#2563eb" oninput="setBuilderStyle('accent',this.value)" style="height:32px;cursor:pointer;">
+                        </div>
+                        <div class="field"><label>Font Size</label>
+                            <input type="number" id="builderFontSize" value="13" min="10" max="18" oninput="setBuilderStyle('fontSize',parseFloat(this.value))" style="width:100%;padding:4px 6px;border:1px solid var(--border-color);border-radius:4px;background:var(--input-bg);color:var(--text-primary);font-size:12px;">
+                        </div>
+                        <div class="field"><label>Section Spacing</label>
+                            <input type="number" id="builderSpacing" value="16" min="8" max="32" oninput="setBuilderStyle('sectionSpacing',parseFloat(this.value))" style="width:100%;padding:4px 6px;border:1px solid var(--border-color);border-radius:4px;background:var(--input-bg);color:var(--text-primary);font-size:12px;">
+                        </div>
+                        <div class="field"><label>Header Align</label>
+                            <select id="builderHeaderAlign" onchange="setBuilderStyle('headerAlign',this.value)">
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>Section Divider</label>
+                            <select id="builderDivider" onchange="setBuilderStyle('sectionDivider',this.value)">
+                                <option value="underline">Underline</option>
+                                <option value="border">Border</option>
+                                <option value="solid">Solid</option>
+                                <option value="minimal">Minimal</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>Photo Style</label>
+                            <select id="builderPhotoStyle" onchange="setBuilderStyle('photoStyle',this.value)">
+                                <option value="circle">Circle</option>
+                                <option value="square">Square</option>
+                                <option value="rounded">Rounded</option>
+                                <option value="hidden">Hidden</option>
+                            </select>
+                        </div>
+                        <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:6px;">
+                            <label style="text-transform:none;font-size:12px;color:var(--text-primary);">Show Icons</label>
+                            <input type="checkbox" id="builderShowIcons" checked onchange="setBuilderStyle('showIcons',this.checked)">
+                        </div>
+                    </div>
+
+                    <div style="font-size:11px;color:var(--text-secondary);margin-top:8px;padding:8px 12px;background:var(--badge-bg);border-radius:6px;">
+                        💡 Custom templates are saved to your browser and can be reused across any resume.
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- PREVIEW PANEL -->
         <div class="preview-panel">
             <div class="preview-toolbar">
+                <button class="history-btn" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)">↩</button>
+                <button class="history-btn" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Y)">↪</button>
+                <span style="width:1px;height:18px;background:var(--border-color);"></span>
                 <button class="zoombtn" onclick="zoom(-10)">−</button>
                 <span class="zoomval" id="zoomVal">80%</span>
                 <button class="zoombtn" onclick="zoom(10)">+</button>
@@ -3292,11 +3658,11 @@
     ============================================================ -->
     <div class="shortcuts-helper" id="shortcutsHelper">
         <h4>⌨️ Keyboard Shortcuts</h4>
-        <div class="row"><span>Save</span><kbd>Ctrl + S</kbd></div>
         <div class="row"><span>Undo</span><kbd>Ctrl + Z</kbd></div>
         <div class="row"><span>Redo</span><kbd>Ctrl + Y</kbd></div>
-        <div class="row"><span>Duplicate</span><kbd>Ctrl + D</kbd></div>
+        <div class="row"><span>Save</span><kbd>Ctrl + S</kbd></div>
         <div class="row"><span>Print</span><kbd>Ctrl + P</kbd></div>
+        <div class="row"><span>Duplicate</span><kbd>Ctrl + D</kbd></div>
         <div class="row"><span>Close</span><kbd>Esc</kbd></div>
     </div>
 
@@ -3399,7 +3765,42 @@
             favorite: false,
             archived: false,
             createdAt: Date.now(),
-            updatedAt: Date.now()
+            updatedAt: Date.now(),
+            // Custom builder data
+            customBuilder: {
+                enabled: false,
+                layout: 'one-column',
+                sections: [
+                    { id: 'personal', label: 'Personal Info', visible: true, order: 0 },
+                    { id: 'summary', label: 'Summary', visible: true, order: 1 },
+                    { id: 'experience', label: 'Experience', visible: true, order: 2 },
+                    { id: 'education', label: 'Education', visible: true, order: 3 },
+                    { id: 'skills', label: 'Skills', visible: true, order: 4 },
+                    { id: 'languages', label: 'Languages', visible: true, order: 5 },
+                    { id: 'projects', label: 'Projects', visible: true, order: 6 },
+                    { id: 'certifications', label: 'Certifications', visible: true, order: 7 },
+                    { id: 'awards', label: 'Awards', visible: true, order: 8 },
+                    { id: 'publications', label: 'Publications', visible: true, order: 9 },
+                    { id: 'volunteer', label: 'Volunteer', visible: true, order: 10 },
+                    { id: 'achievements', label: 'Achievements', visible: true, order: 11 },
+                    { id: 'courses', label: 'Courses', visible: true, order: 12 },
+                    { id: 'hobbies', label: 'Hobbies', visible: true, order: 13 },
+                    { id: 'custom', label: 'Custom Sections', visible: true, order: 14 },
+                ],
+                customSections: [], // { id: 'cs_1', label: 'My Section', content: '' }
+                styles: {
+                    font: "'Inter',sans-serif",
+                    accent: '#2563eb',
+                    fontSize: 13,
+                    sectionSpacing: 16,
+                    headerAlign: 'left',
+                    sectionDivider: 'underline',
+                    photoStyle: 'circle',
+                    showIcons: true,
+                }
+            },
+            // Saved custom templates (global, shared across resumes)
+            savedCustomTemplates: {} // { id: { name, definition } }
         };
 
         const TEMPLATE_LIST = [
@@ -3473,6 +3874,290 @@
         let isDirty = false;
         let toastTimer = null;
 
+        /* ============================================================
+           UNDO / REDO SYSTEM
+           ============================================================ */
+        const HISTORY_MAX = 100;
+        let historyStack = [];
+        let historyIndex = -1;
+        let historyIsRestoring = false;
+
+        function pushHistory() {
+            if (historyIsRestoring) return;
+            // If we're not at the end, truncate
+            if (historyIndex < historyStack.length - 1) {
+                historyStack = historyStack.slice(0, historyIndex + 1);
+            }
+            const snapshot = JSON.parse(JSON.stringify(data));
+            historyStack.push(snapshot);
+            if (historyStack.length > HISTORY_MAX) {
+                historyStack.shift();
+            }
+            historyIndex = historyStack.length - 1;
+            updateUndoRedoButtons();
+        }
+
+        function undo() {
+            if (historyIndex <= 0) return;
+            historyIsRestoring = true;
+            historyIndex--;
+            const snapshot = historyStack[historyIndex];
+            if (snapshot) {
+                restoreSnapshot(snapshot);
+            }
+            historyIsRestoring = false;
+            updateUndoRedoButtons();
+            showToast('↩️ Undo');
+        }
+
+        function redo() {
+            if (historyIndex >= historyStack.length - 1) return;
+            historyIsRestoring = true;
+            historyIndex++;
+            const snapshot = historyStack[historyIndex];
+            if (snapshot) {
+                restoreSnapshot(snapshot);
+            }
+            historyIsRestoring = false;
+            updateUndoRedoButtons();
+            showToast('↪️ Redo');
+        }
+
+        function restoreSnapshot(snapshot) {
+            data = JSON.parse(JSON.stringify(snapshot));
+            // Re-sync with the current profile
+            if (currentProfileId && allProfiles[currentProfileId]) {
+                allProfiles[currentProfileId].data = JSON.parse(JSON.stringify(data));
+                allProfiles[currentProfileId].updatedAt = Date.now();
+                saveProfiles(allProfiles);
+            }
+            saveData();
+            hydrateForm();
+            buildDesignControls();
+            renderForms();
+            renderPreview();
+            applyZoom();
+            updateCompletionBar();
+            updateUndoRedoButtons();
+            // Refresh custom builder UI if visible
+            if (document.querySelector('.section[data-tab="custom-builder"].active')) {
+                renderBuilderUI();
+            }
+        }
+
+        function updateUndoRedoButtons() {
+            const undoBtn = document.getElementById('undoBtn');
+            const redoBtn = document.getElementById('redoBtn');
+            if (undoBtn) undoBtn.disabled = historyIndex <= 0;
+            if (redoBtn) redoBtn.disabled = historyIndex >= historyStack.length - 1;
+        }
+
+        // Wrap data-modifying functions to push history
+        function withHistory(fn) {
+            return function(...args) {
+                const result = fn.apply(this, args);
+                pushHistory();
+                return result;
+            };
+        }
+
+        // Override key functions to push history
+        const origOnInput = onInput;
+        onInput = function() {
+            origOnInput();
+            pushHistory();
+        };
+
+        const origAddEntry = addEntry;
+        addEntry = function(key) {
+            origAddEntry(key);
+            pushHistory();
+        };
+
+        const origRemoveEntry = removeEntry;
+        removeEntry = function(key, idx) {
+            origRemoveEntry(key, idx);
+            pushHistory();
+        };
+
+        const origDuplicateEntry = duplicateEntry;
+        duplicateEntry = function(key, idx) {
+            origDuplicateEntry(key, idx);
+            pushHistory();
+        };
+
+        const origUpdateEntry = updateEntry;
+        updateEntry = function(key, idx, field, value) {
+            origUpdateEntry(key, idx, field, value);
+            pushHistory();
+        };
+
+        const origSetTemplate = setTemplate;
+        setTemplate = function(id) {
+            origSetTemplate(id);
+            pushHistory();
+        };
+
+        const origSetAccent = setAccent;
+        setAccent = function(c) {
+            origSetAccent(c);
+            pushHistory();
+        };
+
+        const origSetFont = setFont;
+        setFont = function(f) {
+            origSetFont(f);
+            pushHistory();
+        };
+
+        const origSetFontSize = setFontSize;
+        setFontSize = function(v) {
+            origSetFontSize(v);
+            pushHistory();
+        };
+
+        const origSetLineHeight = setLineHeight;
+        setLineHeight = function(v) {
+            origSetLineHeight(v);
+            pushHistory();
+        };
+
+        const origSetLetterSpacing = setLetterSpacing;
+        setLetterSpacing = function(v) {
+            origSetLetterSpacing(v);
+            pushHistory();
+        };
+
+        const origSetSectionSpacing = setSectionSpacing;
+        setSectionSpacing = function(v) {
+            origSetSectionSpacing(v);
+            pushHistory();
+        };
+
+        const origSetHeaderAlign = setHeaderAlign;
+        setHeaderAlign = function(v) {
+            origSetHeaderAlign(v);
+            pushHistory();
+        };
+
+        const origSetPaperSize = setPaperSize;
+        setPaperSize = function(v) {
+            origSetPaperSize(v);
+            pushHistory();
+        };
+
+        const origSetSectionDivider = setSectionDivider;
+        setSectionDivider = function(v) {
+            origSetSectionDivider(v);
+            pushHistory();
+        };
+
+        const origSetPhotoStyle = setPhotoStyle;
+        setPhotoStyle = function(v) {
+            origSetPhotoStyle(v);
+            pushHistory();
+        };
+
+        const origSetShowIcons = setShowIcons;
+        setShowIcons = function(v) {
+            origSetShowIcons(v);
+            pushHistory();
+        };
+
+        const origSetPageNumbers = setPageNumbers;
+        setPageNumbers = function(v) {
+            origSetPageNumbers(v);
+            pushHistory();
+        };
+
+        const origSetATS = setATS;
+        setATS = function(on) {
+            origSetATS(on);
+            pushHistory();
+        };
+
+        const origLoadExample = loadExample;
+        loadExample = function(role) {
+            origLoadExample(role);
+            pushHistory();
+        };
+
+        const origCreateNewResume = createNewResume;
+        createNewResume = function() {
+            origCreateNewResume();
+            pushHistory();
+        };
+
+        const origLoadProfile = loadProfile;
+        loadProfile = function(id) {
+            origLoadProfile(id);
+            pushHistory();
+        };
+
+        // Also wrap the custom builder functions
+        const origSetBuilderLayout = setBuilderLayout;
+        setBuilderLayout = function(layout) {
+            origSetBuilderLayout(layout);
+            pushHistory();
+        };
+
+        const origToggleBuilderSection = toggleBuilderSection;
+        toggleBuilderSection = function(sectionId) {
+            origToggleBuilderSection(sectionId);
+            pushHistory();
+        };
+
+        const origReorderBuilderSection = reorderBuilderSection;
+        reorderBuilderSection = function(fromIdx, toIdx) {
+            origReorderBuilderSection(fromIdx, toIdx);
+            pushHistory();
+        };
+
+        const origAddBuilderCustomSection = addBuilderCustomSection;
+        addBuilderCustomSection = function() {
+            origAddBuilderCustomSection();
+            pushHistory();
+        };
+
+        const origRemoveBuilderCustomSection = removeBuilderCustomSection;
+        removeBuilderCustomSection = function(id) {
+            origRemoveBuilderCustomSection(id);
+            pushHistory();
+        };
+
+        const origSetBuilderStyle = setBuilderStyle;
+        setBuilderStyle = function(key, value) {
+            origSetBuilderStyle(key, value);
+            pushHistory();
+        };
+
+        const origApplyCustomTemplate = applyCustomTemplate;
+        applyCustomTemplate = function() {
+            origApplyCustomTemplate();
+            pushHistory();
+        };
+
+        const origSaveCustomTemplate = saveCustomTemplate;
+        saveCustomTemplate = function() {
+            origSaveCustomTemplate();
+            pushHistory();
+        };
+
+        const origLoadCustomTemplate = loadCustomTemplate;
+        loadCustomTemplate = function(templateId) {
+            origLoadCustomTemplate(templateId);
+            pushHistory();
+        };
+
+        const origDeleteCustomTemplate = deleteCustomTemplate;
+        deleteCustomTemplate = function(templateId) {
+            origDeleteCustomTemplate(templateId);
+            pushHistory();
+        };
+
+        /* ============================================================
+           DATA LOADING & SAVING (extended)
+           ============================================================ */
         function loadData() {
             try {
                 const raw = localStorage.getItem('resume_builder_pro_data');
@@ -3487,6 +4172,13 @@
                                 merged[key] = parsed[key];
                             }
                         }
+                    }
+                    // Ensure customBuilder exists
+                    if (!merged.customBuilder) {
+                        merged.customBuilder = JSON.parse(JSON.stringify(DEFAULT_DATA.customBuilder));
+                    }
+                    if (!merged.savedCustomTemplates) {
+                        merged.savedCustomTemplates = {};
                     }
                     return merged;
                 }
@@ -3529,7 +4221,7 @@
         }
 
         /* ============================================================
-           PROFILES
+           PROFILES (extended)
            ============================================================ */
         function loadProfiles() {
             try { return JSON.parse(localStorage.getItem('resume_builder_pro_profiles') || '{}'); } catch (e) { return {}; }
@@ -3547,6 +4239,9 @@
             const fresh = JSON.parse(JSON.stringify(DEFAULT_DATA));
             fresh.createdAt = Date.now();
             fresh.updatedAt = Date.now();
+            // Initialize custom builder
+            fresh.customBuilder = JSON.parse(JSON.stringify(DEFAULT_DATA.customBuilder));
+            fresh.savedCustomTemplates = {};
             allProfiles[id] = { name, data: fresh, createdAt: Date.now(), updatedAt: Date.now(), downloads: 0,
                 favorite: false, archived: false };
             saveProfiles(allProfiles);
@@ -3561,12 +4256,21 @@
             goToEditor();
             showToast('✨ Created "' + name + '"');
             renderDashboard();
+            // Init history with current state
+            pushHistory();
         }
 
         function loadProfile(id) {
             if (!allProfiles[id]) return;
             const p = allProfiles[id];
             data = Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), p.data);
+            // Ensure custom builder fields exist
+            if (!data.customBuilder) {
+                data.customBuilder = JSON.parse(JSON.stringify(DEFAULT_DATA.customBuilder));
+            }
+            if (!data.savedCustomTemplates) {
+                data.savedCustomTemplates = {};
+            }
             setCurrentProfileId(id);
             p.updatedAt = Date.now();
             saveProfiles(allProfiles);
@@ -3579,105 +4283,10 @@
             goToEditor();
             showToast('📂 Opened "' + p.name + '"');
             renderDashboard();
-        }
-
-        function duplicateResume(id) {
-            if (!allProfiles[id]) return;
-            const p = allProfiles[id];
-            const newId = 'p_' + Date.now();
-            const newData = JSON.parse(JSON.stringify(p.data));
-            newData.createdAt = Date.now();
-            newData.updatedAt = Date.now();
-            allProfiles[newId] = {
-                name: p.name + ' (Copy)',
-                data: newData,
-                createdAt: Date.now(),
-                updatedAt: Date.now(),
-                downloads: 0,
-                favorite: false,
-                archived: false
-            };
-            saveProfiles(allProfiles);
-            renderDashboard();
-            showToast('📋 Duplicated "' + p.name + '"');
-        }
-
-        function deleteResume(id) {
-            if (!allProfiles[id]) return;
-            if (!confirm('Delete "' + allProfiles[id].name + '"? This cannot be undone.')) return;
-            delete allProfiles[id];
-            saveProfiles(allProfiles);
-            if (currentProfileId === id) {
-                currentProfileId = null;
-                localStorage.removeItem('resume_builder_pro_current');
-                data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                saveData();
-                hydrateForm();
-                renderForms();
-                renderPreview();
-            }
-            renderDashboard();
-            showToast('🗑 Deleted');
-        }
-
-        function archiveResume(id) {
-            if (!allProfiles[id]) return;
-            allProfiles[id].archived = !allProfiles[id].archived;
-            if (allProfiles[id].archived && currentProfileId === id) {
-                goToDashboard();
-            }
-            saveProfiles(allProfiles);
-            renderDashboard();
-            showToast(allProfiles[id].archived ? '📦 Archived' : '↩️ Restored');
-        }
-
-        function toggleFavorite(id) {
-            if (!allProfiles[id]) return;
-            allProfiles[id].favorite = !allProfiles[id].favorite;
-            saveProfiles(allProfiles);
-            renderDashboard();
-        }
-
-        function renameResume(id) {
-            if (!allProfiles[id]) return;
-            renameTargetId = id;
-            document.getElementById('renameInput').value = allProfiles[id].name;
-            document.getElementById('renameOverlay').classList.add('active');
-        }
-
-        function closeRename() {
-            document.getElementById('renameOverlay').classList.remove('active');
-            renameTargetId = null;
-        }
-
-        function confirmRename() {
-            if (!renameTargetId || !allProfiles[renameTargetId]) return;
-            const newName = document.getElementById('renameInput').value.trim();
-            if (!newName) return;
-            allProfiles[renameTargetId].name = newName;
-            saveProfiles(allProfiles);
-            renderDashboard();
-            closeRename();
-            showToast('✏️ Renamed to "' + newName + '"');
-        }
-
-        function saveAsProfile() {
-            const nameInput = document.getElementById('newProfileName');
-            const name = nameInput.value.trim() || (data.personal.name ? data.personal.name + "'s Resume" : 'Untitled Resume');
-            const profiles = loadProfiles();
-            const id = 'p_' + Date.now();
-            const fresh = JSON.parse(JSON.stringify(data));
-            fresh.createdAt = Date.now();
-            fresh.updatedAt = Date.now();
-            profiles[id] = { name, data: fresh, createdAt: Date.now(), updatedAt: Date.now(), downloads: 0,
-                favorite: false, archived: false };
-            saveProfiles(profiles);
-            setCurrentProfileId(id);
-            allProfiles = profiles;
-            nameInput.value = '';
-            renderManagerList();
-            renderDashboard();
-            showToast('💾 Saved as "' + name + '"');
+            // Init history with current state
+            historyStack = [];
+            historyIndex = -1;
+            pushHistory();
         }
 
         function setCurrentProfileId(id) {
@@ -3732,7 +4341,7 @@
         }
 
         /* ============================================================
-           TABS
+           TABS (extended)
            ============================================================ */
         const TABS = [
             { id: 'personal', label: '👤 Personal' },
@@ -3742,7 +4351,8 @@
             { id: 'skills', label: '⚡ Skills' },
             { id: 'projects', label: '🚀 Projects' },
             { id: 'extra', label: '📎 Extra' },
-            { id: 'design', label: '🎨 Design' }
+            { id: 'design', label: '🎨 Design' },
+            { id: 'custom-builder', label: '🛠️ Custom' }
         ];
 
         function buildTabs() {
@@ -3756,10 +4366,13 @@
         function switchTab(id) {
             document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === id));
             document.querySelectorAll('.section').forEach(el => el.classList.toggle('active', el.dataset.tab === id));
+            if (id === 'custom-builder') {
+                renderBuilderUI();
+            }
         }
 
         /* ============================================================
-           FORM BINDING
+           FORM BINDING (extended)
            ============================================================ */
         function onInput() {
             data.personal.name = document.getElementById('p_name').value;
@@ -3936,7 +4549,7 @@
         }
 
         /* ============================================================
-           REPEATING ENTRIES
+           REPEATING ENTRIES (extended with history)
            ============================================================ */
         const ENTRY_KEYS = ['experience', 'education', 'skills', 'languages', 'projects', 'certifications',
             'custom', 'awards', 'publications', 'volunteer', 'achievements', 'courses', 'hobbies'
@@ -4294,6 +4907,10 @@
         }
 
         function setTemplate(id) {
+            // If switching to a built-in template, disable custom builder
+            if (id !== 'custom') {
+                data.customBuilder.enabled = false;
+            }
             data.design.template = id;
             data.updatedAt = Date.now();
             queueSave();
@@ -4406,6 +5023,485 @@
         }
 
         /* ============================================================
+           CUSTOM BUILDER
+           ============================================================ */
+        function renderBuilderUI() {
+            const cb = data.customBuilder;
+            if (!cb) return;
+
+            // Layout buttons
+            document.querySelectorAll('.builder-layout-option').forEach(el => {
+                el.classList.toggle('active', el.dataset.layout === cb.layout);
+            });
+
+            // Sections
+            const list = document.getElementById('builderSectionList');
+            const sorted = [...cb.sections].sort((a, b) => a.order - b.order);
+            list.innerHTML = sorted.map((sec, idx) => `
+            <div class="builder-section-item" draggable="true" data-section-id="${sec.id}" data-order="${sec.order}">
+              <span class="drag-handle">⠿</span>
+              <button class="toggle ${sec.visible?'on':''}" onclick="toggleBuilderSection('${sec.id}')"></button>
+              <span class="label">${sec.label} <span class="sub">${sec.id.startsWith('cs_') ? 'custom' : ''}</span></span>
+              <div class="actions">
+                ${sec.id.startsWith('cs_') ? `<button class="icon-btn danger" onclick="removeBuilderCustomSection('${sec.id}')" title="Delete custom section">✕</button>` : ''}
+              </div>
+            </div>
+          `).join('');
+
+            // Re-init drag for builder sections
+            initBuilderDrag();
+
+            // Styles
+            const styles = cb.styles || {};
+            document.getElementById('builderFont').value = styles.font || "'Inter',sans-serif";
+            document.getElementById('builderAccent').value = styles.accent || '#2563eb';
+            document.getElementById('builderFontSize').value = styles.fontSize || 13;
+            document.getElementById('builderSpacing').value = styles.sectionSpacing || 16;
+            document.getElementById('builderHeaderAlign').value = styles.headerAlign || 'left';
+            document.getElementById('builderDivider').value = styles.sectionDivider || 'underline';
+            document.getElementById('builderPhotoStyle').value = styles.photoStyle || 'circle';
+            document.getElementById('builderShowIcons').checked = styles.showIcons !== false;
+
+            // Saved templates list
+            renderSavedTemplatesList();
+        }
+
+        function initBuilderDrag() {
+            const items = document.querySelectorAll('.builder-section-item');
+            let dragItem = null;
+            items.forEach(el => {
+                el.addEventListener('dragstart', (e) => {
+                    dragItem = el;
+                    el.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                el.addEventListener('dragend', () => {
+                    el.classList.remove('dragging');
+                    dragItem = null;
+                });
+                el.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+                el.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (!dragItem || dragItem === el) return;
+                    const fromId = dragItem.dataset.sectionId;
+                    const toId = el.dataset.sectionId;
+                    const cb = data.customBuilder;
+                    const fromIdx = cb.sections.findIndex(s => s.id === fromId);
+                    const toIdx = cb.sections.findIndex(s => s.id === toId);
+                    if (fromIdx === -1 || toIdx === -1) return;
+                    const [moved] = cb.sections.splice(fromIdx, 1);
+                    cb.sections.splice(toIdx, 0, moved);
+                    // Rebuild order
+                    cb.sections.forEach((s, i) => s.order = i);
+                    data.updatedAt = Date.now();
+                    queueSave();
+                    renderBuilderUI();
+                    renderPreview();
+                    updateCompletionBadges();
+                });
+            });
+        }
+
+        function setBuilderLayout(layout) {
+            data.customBuilder.layout = layout;
+            data.updatedAt = Date.now();
+            queueSave();
+            renderBuilderUI();
+            renderPreview();
+        }
+
+        function toggleBuilderSection(sectionId) {
+            const cb = data.customBuilder;
+            const sec = cb.sections.find(s => s.id === sectionId);
+            if (sec) {
+                sec.visible = !sec.visible;
+                data.updatedAt = Date.now();
+                queueSave();
+                renderBuilderUI();
+                renderPreview();
+                updateCompletionBadges();
+            }
+        }
+
+        function reorderBuilderSection(fromIdx, toIdx) {
+            const cb = data.customBuilder;
+            if (fromIdx === toIdx || fromIdx < 0 || toIdx < 0 || fromIdx >= cb.sections.length || toIdx >= cb.sections
+                .length) return;
+            const [moved] = cb.sections.splice(fromIdx, 1);
+            cb.sections.splice(toIdx, 0, moved);
+            cb.sections.forEach((s, i) => s.order = i);
+            data.updatedAt = Date.now();
+            queueSave();
+            renderBuilderUI();
+            renderPreview();
+        }
+
+        function addBuilderCustomSection() {
+            const name = prompt('Enter custom section name:');
+            if (!name) return;
+            const cb = data.customBuilder;
+            const id = 'cs_' + Date.now();
+            cb.sections.push({ id, label: name, visible: true, order: cb.sections.length });
+            cb.customSections.push({ id, label: name, content: '' });
+            data.updatedAt = Date.now();
+            queueSave();
+            renderBuilderUI();
+            renderPreview();
+            updateCompletionBadges();
+            showToast('➕ Added custom section: ' + name);
+        }
+
+        function removeBuilderCustomSection(id) {
+            if (!confirm('Delete this custom section?')) return;
+            const cb = data.customBuilder;
+            cb.sections = cb.sections.filter(s => s.id !== id);
+            cb.customSections = cb.customSections.filter(s => s.id !== id);
+            data.updatedAt = Date.now();
+            queueSave();
+            renderBuilderUI();
+            renderPreview();
+            updateCompletionBadges();
+            showToast('🗑 Removed custom section');
+        }
+
+        function setBuilderStyle(key, value) {
+            if (!data.customBuilder.styles) data.customBuilder.styles = {};
+            data.customBuilder.styles[key] = value;
+            data.updatedAt = Date.now();
+            queueSave();
+            renderPreview();
+        }
+
+        function renderSavedTemplatesList() {
+            const container = document.getElementById('builderSavedList');
+            const templates = data.savedCustomTemplates || {};
+            const ids = Object.keys(templates);
+            if (ids.length === 0) {
+                container.innerHTML = `<span style="font-size:11px;color:var(--text-secondary);">No saved templates yet.</span>`;
+                return;
+            }
+            container.innerHTML = ids.map(id => {
+                const t = templates[id];
+                const isActive = data.design.template === 'custom' && data.customBuilder._activeTemplate === id;
+                return `<div class="pill ${isActive?'active':''}" onclick="loadCustomTemplate('${id}')">
+              ${t.name}
+              <span class="del" onclick="event.stopPropagation();deleteCustomTemplate('${id}')">✕</span>
+            </div>`;
+            }).join('');
+        }
+
+        function saveCustomTemplate() {
+            const nameInput = document.getElementById('builderTemplateName');
+            const name = nameInput.value.trim() || 'Custom Template ' + (Object.keys(data.savedCustomTemplates || {})
+            .length + 1);
+            if (!name) return;
+
+            const cb = data.customBuilder;
+            const definition = {
+                layout: cb.layout,
+                sections: JSON.parse(JSON.stringify(cb.sections)),
+                customSections: JSON.parse(JSON.stringify(cb.customSections)),
+                styles: JSON.parse(JSON.stringify(cb.styles || {}))
+            };
+
+            const id = 'ct_' + Date.now();
+            if (!data.savedCustomTemplates) data.savedCustomTemplates = {};
+            data.savedCustomTemplates[id] = { name, definition, createdAt: Date.now() };
+            data.updatedAt = Date.now();
+            queueSave();
+
+            // Also save to the global profiles system for persistence across resumes
+            // We store it in the data itself, which is per-profile, but we want global sharing
+            // So we also store in a separate global key
+            const globalTemplates = JSON.parse(localStorage.getItem('resume_builder_pro_custom_templates') || '{}');
+            globalTemplates[id] = { name, definition, createdAt: Date.now() };
+            localStorage.setItem('resume_builder_pro_custom_templates', JSON.stringify(globalTemplates));
+
+            nameInput.value = '';
+            renderSavedTemplatesList();
+            showToast('💾 Saved custom template: ' + name);
+        }
+
+        function loadCustomTemplate(templateId) {
+            const templates = data.savedCustomTemplates || {};
+            const t = templates[templateId];
+            if (!t) {
+                // Try global storage
+                const globalTemplates = JSON.parse(localStorage.getItem('resume_builder_pro_custom_templates') || '{}');
+                const gt = globalTemplates[templateId];
+                if (gt) {
+                    // Import to local
+                    data.savedCustomTemplates[templateId] = gt;
+                    applyTemplateDefinition(gt.definition);
+                    data.customBuilder._activeTemplate = templateId;
+                    data.design.template = 'custom';
+                    data.customBuilder.enabled = true;
+                    data.updatedAt = Date.now();
+                    queueSave();
+                    renderBuilderUI();
+                    renderPreview();
+                    showToast('📂 Loaded custom template: ' + gt.name);
+                    return;
+                }
+                showToast('❌ Template not found');
+                return;
+            }
+            applyTemplateDefinition(t.definition);
+            data.customBuilder._activeTemplate = templateId;
+            data.design.template = 'custom';
+            data.customBuilder.enabled = true;
+            data.updatedAt = Date.now();
+            queueSave();
+            renderBuilderUI();
+            renderPreview();
+            showToast('📂 Loaded custom template: ' + t.name);
+        }
+
+        function applyTemplateDefinition(def) {
+            const cb = data.customBuilder;
+            cb.layout = def.layout || 'one-column';
+            cb.sections = def.sections || cb.sections;
+            cb.customSections = def.customSections || [];
+            cb.styles = def.styles || {};
+            // Ensure all built-in sections exist
+            const builtInIds = ['personal', 'summary', 'experience', 'education', 'skills', 'languages',
+                'projects', 'certifications', 'awards', 'publications', 'volunteer', 'achievements', 'courses',
+                'hobbies', 'custom'
+            ];
+            const existingIds = cb.sections.map(s => s.id);
+            builtInIds.forEach(id => {
+                if (!existingIds.includes(id)) {
+                    cb.sections.push({
+                        id,
+                        label: id.charAt(0).toUpperCase() + id.slice(1),
+                        visible: true,
+                        order: cb.sections.length
+                    });
+                }
+            });
+            cb.sections.forEach((s, i) => s.order = i);
+        }
+
+        function deleteCustomTemplate(templateId) {
+            if (!confirm('Delete this custom template?')) return;
+            if (data.savedCustomTemplates) {
+                delete data.savedCustomTemplates[templateId];
+            }
+            // Also delete from global
+            const globalTemplates = JSON.parse(localStorage.getItem('resume_builder_pro_custom_templates') || '{}');
+            delete globalTemplates[templateId];
+            localStorage.setItem('resume_builder_pro_custom_templates', JSON.stringify(globalTemplates));
+            if (data.customBuilder._activeTemplate === templateId) {
+                data.customBuilder._activeTemplate = null;
+                data.design.template = 'modern';
+                data.customBuilder.enabled = false;
+            }
+            data.updatedAt = Date.now();
+            queueSave();
+            renderSavedTemplatesList();
+            renderPreview();
+            showToast('🗑 Deleted custom template');
+        }
+
+        function resetCustomTemplate() {
+            if (!confirm('Reset custom builder to default?')) return;
+            const cb = data.customBuilder;
+            const def = JSON.parse(JSON.stringify(DEFAULT_DATA.customBuilder));
+            cb.layout = def.layout;
+            cb.sections = def.sections;
+            cb.customSections = [];
+            cb.styles = {};
+            cb._activeTemplate = null;
+            data.design.template = 'modern';
+            data.customBuilder.enabled = false;
+            data.updatedAt = Date.now();
+            queueSave();
+            renderBuilderUI();
+            renderPreview();
+            showToast('↺ Reset custom builder');
+        }
+
+        function applyCustomTemplate() {
+            // Apply the current custom builder settings to the resume
+            data.design.template = 'custom';
+            data.customBuilder.enabled = true;
+            data.updatedAt = Date.now();
+            queueSave();
+            renderPreview();
+            showToast('✅ Applied custom layout to resume');
+        }
+
+        /* ============================================================
+           CUSTOM TEMPLATE RENDERER
+           ============================================================ */
+        function renderCustomTemplate() {
+            const cb = data.customBuilder;
+            if (!cb || !cb.enabled) return null;
+
+            const p = data.personal;
+            const ats = data.design.ats;
+            const styles = cb.styles || {};
+            const accent = ats ? '#222' : (styles.accent || data.design.accent || '#2563eb');
+            const font = styles.font || data.design.font || "'Inter',sans-serif";
+            const fontSize = styles.fontSize || data.design.fontSize || 13;
+            const sectionSpacing = styles.sectionSpacing || data.design.sectionSpacing || 16;
+            const headerAlign = styles.headerAlign || data.design.headerAlign || 'left';
+            const sectionDivider = styles.sectionDivider || data.design.sectionDivider || 'underline';
+            const photoStyle = styles.photoStyle || data.design.photoStyle || 'circle';
+            const showIcons = styles.showIcons !== false && data.design.showIcons !== false && !ats;
+
+            const layout = cb.layout || 'one-column';
+            const visibleSections = cb.sections.filter(s => s.visible).sort((a, b) => a.order - b.order);
+
+            // Build section HTML
+            const sectionHTML = {};
+
+            // Personal info (always first, not in the section list)
+            const contactParts = [p.phone, p.email, [p.city, p.country].filter(Boolean).join(', '), p.linkedin, p.website,
+                p.github, p.behance
+            ].filter(Boolean);
+
+            const headPhoto = (!ats && p.photo) ?
+                `<img src="${p.photo}" style="width:64px;height:64px;object-fit:cover;border-radius:${photoStyle === 'circle' ? '50%' : photoStyle === 'square' ? '0' : '8px'};float:right;margin-left:12px;">` :
+                '';
+
+            const headHTML = `
+            <div class="head" style="text-align:${headerAlign};">
+              ${headPhoto}
+              <div class="name">${esc(p.name) || 'Your Name'}</div>
+              <div class="title">${esc(p.title) || 'Professional Title'}</div>
+              <div class="contact">${contactParts.map(c=>`<span>${esc(c)}</span>`).join(' · ')}</div>
+            </div>
+          `;
+
+            const bodySections = [];
+
+            // Build each section
+            visibleSections.forEach(sec => {
+                let html = '';
+                switch (sec.id) {
+                    case 'summary':
+                        if (data.summary) {
+                            html =
+                            `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'📝 ':''}Summary</h3><div class="desc">${esc(data.summary)}</div></div>`;
+                        }
+                        break;
+                    case 'experience':
+                        if (data.experience && data.experience.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'💼 ':''}Experience</h3>
+                            ${data.experience.map(e => `<div class="item"><div class="top"><span>${esc(e.position)||'Position'}${e.company?' · '+esc(e.company):''}</span><span>${esc(e.start)} – ${e.current?'Present':esc(e.end)}</span></div><div class="sub">${esc(e.location)}${e.type?' · '+esc(e.type):''}</div><div class="desc">${esc(e.description)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'education':
+                        if (data.education && data.education.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'🎓 ':''}Education</h3>
+                            ${data.education.map(e => `<div class="item"><div class="top"><span>${esc(e.degree)||'Degree'}${e.field?', '+esc(e.field):''}</span><span>${esc(e.start)} – ${esc(e.end)}</span></div><div class="sub">${esc(e.school)}${e.score?' · '+esc(e.score):''}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'skills':
+                        if (data.skills && data.skills.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'⚡ ':''}Skills</h3>
+                            <div class="skillgrid">${data.skills.map(s=>`<span class="pill">${esc(s.name)}</span>`).join('')}</div>
+                          </div>`;
+                        }
+                        break;
+                    case 'languages':
+                        if (data.languages && data.languages.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'🌐 ':''}Languages</h3>
+                            <div class="skillgrid">${data.languages.map(l=>`${esc(l.name)} (${esc(l.level)})`).join(' &nbsp;·&nbsp; ')}</div>
+                          </div>`;
+                        }
+                        break;
+                    case 'projects':
+                        if (data.projects && data.projects.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'🚀 ':''}Projects</h3>
+                            ${data.projects.map(pr => `<div class="item"><div class="top"><span>${esc(pr.name)||'Project'}</span><span>${esc(pr.link)}</span></div><div class="sub">${esc(pr.tech)}</div><div class="desc">${esc(pr.description)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'certifications':
+                        if (data.certifications && data.certifications.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'📜 ':''}Certifications</h3>
+                            ${data.certifications.map(c => `<div class="item"><div class="top"><span>${esc(c.name)}</span><span>${esc(c.date)}</span></div><div class="sub">${esc(c.issuer)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'awards':
+                        if (data.awards && data.awards.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'🏅 ':''}Awards</h3>
+                            ${data.awards.map(a => `<div class="item"><div class="top"><span>${esc(a.name)}</span><span>${esc(a.year)}</span></div><div class="sub">${esc(a.issuer)}</div><div class="desc">${esc(a.description)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'publications':
+                        if (data.publications && data.publications.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'📖 ':''}Publications</h3>
+                            ${data.publications.map(pub => `<div class="item"><div class="top"><span>${esc(pub.title)}</span><span>${esc(pub.year)}</span></div><div class="sub">${esc(pub.journal)}${pub.authors?' · '+esc(pub.authors):''}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'volunteer':
+                        if (data.volunteer && data.volunteer.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'🧑‍🏫 ':''}Volunteer</h3>
+                            ${data.volunteer.map(v => `<div class="item"><div class="top"><span>${esc(v.role)} · ${esc(v.organization)}</span><span>${esc(v.start)} – ${esc(v.end)}</span></div><div class="desc">${esc(v.description)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'achievements':
+                        if (data.achievements && data.achievements.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'🏆 ':''}Achievements</h3>
+                            ${data.achievements.map(a => `<div class="item"><div class="top"><span>${esc(a.name)}</span><span>${esc(a.date)}</span></div><div class="desc">${esc(a.description)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'courses':
+                        if (data.courses && data.courses.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'📚 ':''}Courses</h3>
+                            ${data.courses.map(c => `<div class="item"><div class="top"><span>${esc(c.name)}</span><span>${esc(c.date)}</span></div><div class="sub">${esc(c.provider)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'hobbies':
+                        if (data.hobbies && data.hobbies.length) {
+                            html = `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'🎯 ':''}Hobbies</h3>
+                            ${data.hobbies.map(h => `<div class="item"><div class="top"><span>${esc(h.name)}</span></div><div class="desc">${esc(h.description)}</div></div>`).join('')}
+                          </div>`;
+                        }
+                        break;
+                    case 'custom':
+                        // Custom sections from the data.custom array
+                        if (data.custom && data.custom.length) {
+                            html = data.custom.map(c =>
+                                `<div class="sec"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'📎 ':''}${esc(c.heading)}</h3><div class="desc">${esc(c.content)}</div></div>`
+                            ).join('');
+                        }
+                        break;
+                }
+                if (html) bodySections.push(html);
+            });
+
+            // Also add any custom sections from the builder's customSections that aren't in the standard data
+            const customSectionData = cb.customSections || [];
+            customSectionData.forEach(cs => {
+                // Check if this section is visible and not already rendered
+                const secDef = cb.sections.find(s => s.id === cs.id);
+                if (secDef && secDef.visible && !bodySections.some(s => s.includes(`id="custom-${cs.id}"`))) {
+                    const content = cs.content || '';
+                    bodySections.push(`<div class="sec" id="custom-${cs.id}"><h3 style="border-bottom:${sectionDivider === 'underline' ? '1px solid var(--page-line)' : sectionDivider === 'border' ? '2px solid var(--page-line)' : sectionDivider === 'solid' ? 'none' : 'none'};${sectionDivider === 'solid' ? 'background:var(--page-line);padding:4px 8px;' : ''}">${showIcons?'📎 ':''}${esc(cs.label)}</h3><div class="desc">${esc(content)}</div></div>`);
+                }
+            });
+
+            const bodyHTML = bodySections.join('');
+
+            return headHTML + `<div class="body" style="padding:16px 36px 30px;">${bodyHTML}</div>`;
+        }
+
+        /* ============================================================
            ZOOM & DEVICE
            ============================================================ */
         function zoom(delta) {
@@ -4430,7 +5526,7 @@
         }
 
         /* ============================================================
-           PREVIEW RENDERING
+           PREVIEW RENDERING (extended with custom template support)
            ============================================================ */
         function renderPreview() {
             const accent = data.design.ats ? '#222' : data.design.accent;
@@ -4440,62 +5536,83 @@
             const page = document.getElementById('resumePage');
             const template = data.design.template || 'modern';
 
-            const fontSize = data.design.fontSize || 13;
-            const lineHeight = data.design.lineHeight || 1.5;
-            const letterSpacing = data.design.letterSpacing || 0;
-            const sectionSpacing = data.design.sectionSpacing || 16;
-            const headerAlign = data.design.headerAlign || 'left';
-            const photoStyle = data.design.photoStyle || 'circle';
-            const showIcons = data.design.showIcons !== false;
-            const showPageNumbers = data.design.showPageNumbers || false;
-
             let html = '';
-            if (template === 'creative') {
-                html = renderCreative();
-            } else if (template === 'classic') {
-                html = renderStandard('classic');
-            } else if (template === 'minimal') {
-                html = renderMinimal();
-            } else if (template === 'corporate') {
-                html = renderCorporate();
-            } else if (template === 'executive') {
-                html = renderExecutive();
-            } else if (template === 'developer') {
-                html = renderDeveloper();
-            } else if (template === 'ats') {
-                html = renderATS();
-            } else if (template === 'designer') {
-                html = renderDesigner();
-            } else if (template === 'student') {
-                html = renderStudent();
-            } else if (template === 'healthcare') {
-                html = renderHealthcare();
-            } else if (template === 'marketing') {
-                html = renderMarketing();
-            } else if (template === 'finance') {
-                html = renderFinance();
-            } else if (template === 'engineering') {
-                html = renderEngineering();
-            } else if (template === 'academic') {
-                html = renderAcademic();
-            } else if (template === 'sales') {
-                html = renderSales();
-            } else if (template === 'freelancer') {
-                html = renderFreelancer();
-            } else if (template === 'business') {
-                html = renderBusiness();
-            } else if (template === 'luxury') {
-                html = renderLuxury();
-            } else if (template === 'minimal-black') {
-                html = renderMinimalBlack();
+
+            // Check if custom builder is enabled and template is 'custom'
+            if (template === 'custom' && data.customBuilder && data.customBuilder.enabled) {
+                const customHTML = renderCustomTemplate();
+                if (customHTML) {
+                    html = customHTML;
+                } else {
+                    // Fallback to modern
+                    html = renderStandard('modern');
+                }
             } else {
-                html = renderStandard('modern');
+                // Use built-in template renderers
+                switch (template) {
+                    case 'creative':
+                        html = renderCreative();
+                        break;
+                    case 'classic':
+                        html = renderStandard('classic');
+                        break;
+                    case 'minimal':
+                        html = renderMinimal();
+                        break;
+                    case 'corporate':
+                        html = renderCorporate();
+                        break;
+                    case 'executive':
+                        html = renderExecutive();
+                        break;
+                    case 'developer':
+                        html = renderDeveloper();
+                        break;
+                    case 'ats':
+                        html = renderATS();
+                        break;
+                    case 'designer':
+                        html = renderDesigner();
+                        break;
+                    case 'student':
+                        html = renderStudent();
+                        break;
+                    case 'healthcare':
+                        html = renderHealthcare();
+                        break;
+                    case 'marketing':
+                        html = renderMarketing();
+                        break;
+                    case 'finance':
+                        html = renderFinance();
+                        break;
+                    case 'engineering':
+                        html = renderEngineering();
+                        break;
+                    case 'academic':
+                        html = renderAcademic();
+                        break;
+                    case 'sales':
+                        html = renderSales();
+                        break;
+                    case 'freelancer':
+                        html = renderFreelancer();
+                        break;
+                    case 'business':
+                        html = renderBusiness();
+                        break;
+                    case 'luxury':
+                        html = renderLuxury();
+                        break;
+                    case 'minimal-black':
+                        html = renderMinimalBlack();
+                        break;
+                    default:
+                        html = renderStandard('modern');
+                }
             }
 
-            // We use the global template styles defined in the CSS now
-            // The page already has the base template styles via .page and .tpl-* classes
-
-            page.className = 'page tpl-' + template;
+            page.className = 'page tpl-' + (template === 'custom' ? 'custom' : template);
             page.innerHTML = html;
 
             requestAnimationFrame(() => {
@@ -5380,33 +6497,6 @@
         }
 
         /* ============================================================
-           ATS SCORE
-           ============================================================ */
-        function computeATS() {
-            const box = document.getElementById('atsScoreBox');
-            if (!box) return;
-            const score = computeATSScore();
-            const warnings = [];
-            if (!data.personal.email) warnings.push('Missing email address');
-            if (!data.personal.phone) warnings.push('Missing phone number');
-            if (data.skills.length === 0) warnings.push('No skills listed');
-            if (data.experience.length === 0) warnings.push('No work experience added');
-            if (!data.summary || data.summary.length < 20) warnings.push('No or short professional summary');
-            if (data.design.ats && data.design.template === 'creative') warnings.push('Creative templates may confuse ATS parsers');
-            if (!data.design.ats && data.personal.photo) warnings.push('Photos are ignored by many ATS systems');
-            if (data.education.length === 0) warnings.push('No education listed');
-            if (data.projects.length === 0) warnings.push('No projects shown');
-            const color = score >= 80 ? '#16a34a' : score >= 55 ? '#d97706' : '#dc2626';
-            box.innerHTML = `
-            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-              <div style="font-weight:800;font-size:28px;color:${color};">${score}/100</div>
-              <div style="font-size:12px;color:var(--text-secondary);">${score>=80?'✅ ATS friendly!':score>=55?'⚠️ Needs improvement':'❌ Major issues detected'}</div>
-            </div>
-            ${warnings.length ? `<ul style="margin-top:8px;padding-left:18px;font-size:11px;color:var(--text-secondary);">${warnings.map(w=>`<li>${w}</li>`).join('')}</ul>` : `<div style="font-size:12px;color:#16a34a;margin-top:6px;">✓ Your resume is well optimized for ATS!</div>`}
-          `;
-        }
-
-        /* ============================================================
            ANALYTICS
            ============================================================ */
         function computeAnalytics() {
@@ -5590,6 +6680,7 @@
             applyZoom();
             goToEditor();
             showToast('📄 Loaded ' + role + ' example');
+            pushHistory();
         }
 
         /* ============================================================
@@ -5862,6 +6953,13 @@
                     try {
                         const imported = JSON.parse(ev.target.result);
                         data = Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), imported);
+                        // Ensure custom builder fields
+                        if (!data.customBuilder) {
+                            data.customBuilder = JSON.parse(JSON.stringify(DEFAULT_DATA.customBuilder));
+                        }
+                        if (!data.savedCustomTemplates) {
+                            data.savedCustomTemplates = {};
+                        }
                         data.updatedAt = Date.now();
                         saveData();
                         hydrateForm();
@@ -5870,6 +6968,7 @@
                         renderPreview();
                         applyZoom();
                         showToast('📥 Imported successfully');
+                        pushHistory();
                     } catch (err) { showToast('❌ Invalid file'); }
                 };
                 reader.readAsText(file);
@@ -5898,7 +6997,7 @@
         }
 
         /* ============================================================
-           KEYBOARD SHORTCUTS
+           KEYBOARD SHORTCUTS (extended with undo/redo)
            ============================================================ */
         function toggleShortcuts() {
             const el = document.getElementById('shortcutsHelper');
@@ -5906,6 +7005,18 @@
         }
 
         document.addEventListener('keydown', (e) => {
+            // Undo: Ctrl+Z
+            if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+                return;
+            }
+            // Redo: Ctrl+Y or Ctrl+Shift+Z
+            if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                redo();
+                return;
+            }
             if (e.ctrlKey && e.key === 's') { e.preventDefault();
                 forceSave();
                 showToast('💾 Saved'); }
@@ -5919,30 +7030,6 @@
                     showToast('No resume loaded to duplicate');
                 }
             }
-            if (e.ctrlKey && e.key === 'z') {
-                e.preventDefault();
-                const saved = loadData();
-                if (saved) {
-                    data = saved;
-                    saveData();
-                    hydrateForm();
-                    renderForms();
-                    renderPreview();
-                    showToast('↩️ Undo');
-                }
-            }
-            if (e.ctrlKey && e.key === 'y') {
-                e.preventDefault();
-                showToast('↪️ Redo (reload from storage)');
-                const saved = loadData();
-                if (saved) {
-                    data = saved;
-                    saveData();
-                    hydrateForm();
-                    renderForms();
-                    renderPreview();
-                }
-            }
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active'));
                 document.getElementById('shortcutsHelper').classList.remove('visible');
@@ -5950,7 +7037,7 @@
         });
 
         /* ============================================================
-           INIT
+           INIT (extended)
            ============================================================ */
         function init() {
             initDarkMode();
@@ -5959,14 +7046,42 @@
             buildDesignControls();
             renderForms();
 
+            // Load global custom templates into data
+            const globalTemplates = JSON.parse(localStorage.getItem('resume_builder_pro_custom_templates') || '{}');
+            if (!data.savedCustomTemplates) data.savedCustomTemplates = {};
+            for (const id in globalTemplates) {
+                if (!data.savedCustomTemplates[id]) {
+                    data.savedCustomTemplates[id] = globalTemplates[id];
+                }
+            }
+
             if (currentProfileId && allProfiles[currentProfileId]) {
                 const p = allProfiles[currentProfileId];
                 data = Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), p.data);
+                if (!data.customBuilder) {
+                    data.customBuilder = JSON.parse(JSON.stringify(DEFAULT_DATA.customBuilder));
+                }
+                if (!data.savedCustomTemplates) {
+                    data.savedCustomTemplates = {};
+                }
+                // Merge global templates
+                const globalTemplates2 = JSON.parse(localStorage.getItem('resume_builder_pro_custom_templates') || '{}');
+                for (const id in globalTemplates2) {
+                    if (!data.savedCustomTemplates[id]) {
+                        data.savedCustomTemplates[id] = globalTemplates2[id];
+                    }
+                }
                 saveData();
                 hydrateForm();
                 renderForms();
             } else {
                 data = loadData();
+                if (!data.customBuilder) {
+                    data.customBuilder = JSON.parse(JSON.stringify(DEFAULT_DATA.customBuilder));
+                }
+                if (!data.savedCustomTemplates) {
+                    data.savedCustomTemplates = {};
+                }
                 hydrateForm();
                 renderForms();
             }
@@ -5977,6 +7092,9 @@
             renderTemplatesShowcase();
 
             if (data.device) setDevice(data.device);
+
+            // Init history with current state
+            pushHistory();
 
             window.addEventListener('beforeunload', () => {
                 if (isDirty) forceSave();
@@ -6054,6 +7172,21 @@
             window.setDevice = setDevice;
             window.loadExample = loadExample;
             window.toggleFAQ = toggleFAQ;
+            window.undo = undo;
+            window.redo = redo;
+            window.setBuilderLayout = setBuilderLayout;
+            window.toggleBuilderSection = toggleBuilderSection;
+            window.addBuilderCustomSection = addBuilderCustomSection;
+            window.removeBuilderCustomSection = removeBuilderCustomSection;
+            window.setBuilderStyle = setBuilderStyle;
+            window.applyCustomTemplate = applyCustomTemplate;
+            window.saveCustomTemplate = saveCustomTemplate;
+            window.loadCustomTemplate = loadCustomTemplate;
+            window.deleteCustomTemplate = deleteCustomTemplate;
+            window.resetCustomTemplate = resetCustomTemplate;
+
+            // Update undo/redo buttons
+            updateUndoRedoButtons();
         }
 
         document.addEventListener('DOMContentLoaded', init);
