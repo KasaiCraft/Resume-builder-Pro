@@ -1962,6 +1962,43 @@
             padding: 0 8px;
         }
 
+        /* Page break marker for user-added pages */
+        .page .user-page-break {
+            display: none; /* Hidden in preview, only used for print */
+        }
+
+        /* Hide user page breaks in print */
+        @media print {
+            .page .user-page-break {
+                display: none !important;
+            }
+            .page .page-break-line {
+                display: none !important;
+            }
+        }
+
+        /* Multi-page preview styles */
+        .preview-pages-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+            width: 100%;
+        }
+        .preview-pages-container .page {
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        .preview-pages-container .page-number {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: -20px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
         /* ATS Score Box in Preview */
         .ats-score-float {
             position: sticky;
@@ -2241,6 +2278,9 @@
 
             /* Hide page break lines in print */
             .page .page-break-line {
+                display: none !important;
+            }
+            .page .user-page-break {
                 display: none !important;
             }
 
@@ -2732,7 +2772,7 @@
                         <div class="field"><label>GitHub</label><input id="p_github" oninput="onInput()" placeholder="github.com/you"></div>
                         <div class="field"><label>Behance / Dribbble</label><input id="p_behance" oninput="onInput()" placeholder="behance.net/you"></div>
                     </div>
-                    <div class="field"><label>Profile Photo</label><input type="file" id="p_photo" accept="image/*" onchange="onPhoto(event)"></div>
+                    <div class="field"><label>Profile Photo</label><input type="file" id="p_photo" accept="image/*" onchange="onPhoto(event)"><button type="button" class="btn btn-sm btn-secondary" onclick="clearPhoto()" style="margin-top:4px;">Clear</button></div>
                 </div>
 
                 <div class="section" data-tab="summary">
@@ -2956,6 +2996,8 @@
                 <span class="zoomval" id="zoomVal">80%</span>
                 <button class="zoombtn" onclick="zoom(10)">+</button>
                 <span style="width:1px;height:18px;background:var(--border-color);"></span>
+                <button class="btn btn-sm btn-secondary" onclick="addPageBreak()" title="Add a new blank page">➕ Add Page</button>
+                <span style="width:1px;height:18px;background:var(--border-color);"></span>
                 <div class="device-toggle">
                     <button class="btn active" data-device="desktop" onclick="setDevice('desktop')">🖥</button>
                     <button class="btn" data-device="tablet" onclick="setDevice('tablet')">📱</button>
@@ -2970,7 +3012,7 @@
                 <span id="wordCountBadge" style="font-size:11px;color:var(--text-secondary);"></span>
             </div>
             <div class="page-wrap device-desktop" id="pageWrap" style="transform:scale(.8);">
-                <div class="page" id="resumePage"></div>
+                <div id="previewPagesContainer" class="preview-pages-container"></div>
             </div>
             <div class="ats-score-float" id="atsFloat">
                 <span>🤖 ATS Scanning Compliance Score Matrix</span>
@@ -3114,7 +3156,8 @@
                 styles: { font: "'Inter',sans-serif", accent: '#2563eb', fontSize: 13, sectionSpacing: 16,
                     headerAlign: 'left', sectionDivider: 'underline', photoStyle: 'circle', showIcons: true }
             },
-            savedCustomTemplates: {}
+            savedCustomTemplates: {},
+            pageBreaks: [] // Array of markers for user-added page breaks
         };
 
         const TEMPLATE_LIST = [
@@ -3243,6 +3286,7 @@
                     if (!merged.design?.template || !TemplateRegistry[merged.design.template]) {
                         merged.design.template = 'modern';
                     }
+                    if (!merged.pageBreaks) merged.pageBreaks = [];
                     return merged;
                 }
             } catch (e) {}
@@ -3327,6 +3371,7 @@
                     saveProfiles(allProfiles);
                 }
             }
+            if (!data.pageBreaks) data.pageBreaks = [];
             saveData();
             hydrateForm();
             buildDesignControls();
@@ -3488,6 +3533,15 @@
             r.readAsDataURL(file);
         }
 
+        function clearPhoto() {
+            data.personal.photo = '';
+            data.updatedAt = Date.now();
+            queueSave();
+            renderPreview();
+            document.getElementById('p_photo').value = '';
+            showToast('Photo cleared.');
+        }
+
         function hydrateForm() {
             document.getElementById('p_name').value = data.personal.name || '';
             document.getElementById('p_title').value = data.personal.title || '';
@@ -3584,6 +3638,10 @@
             if (!data[key]) return;
             data[key][idx][field] = value;
             data.updatedAt = Date.now();
+            // Re-render forms for languages to update the entry title
+            if (key === 'languages') {
+                renderForms();
+            }
             queueSave();
             renderPreview();
         }
@@ -3679,10 +3737,21 @@
             `)).join('') || '<p class="empty-state">Null matrix configuration tracker allocation.</p>';
         }
 
-        function renderLanguagesForm() { document.getElementById('languagesList').innerHTML = data.languages.map((l, i) =>
-                renderEntryCard('languages', l, i, null, (item, idx) =>
-                `<input value="${esc(item.name)}" oninput="updateEntry('languages',${idx},'name',this.value)">`)).join('') ||
-            ''; }
+        // ===== FIXED: Languages Form - uses renderEntryCard with proper title update =====
+        function renderLanguagesForm() {
+            const list = document.getElementById('languagesList');
+            if (!data.languages || data.languages.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+            list.innerHTML = data.languages.map((l, i) => renderEntryCard('languages', l, i, null,
+                (item, idx) => `
+                    <div class="field">
+                        <input value="${esc(item.name)}" placeholder="Enter language name..." oninput="updateEntry('languages',${idx},'name',this.value)">
+                    </div>
+                `
+            )).join('');
+        }
 
         function renderProjectsForm() { document.getElementById('projectsList').innerHTML = data.projects.map((p, i) =>
                 renderEntryCard('projects', p, i, null, (item, idx) =>
@@ -4129,8 +4198,7 @@
 
         function contactLine() {
             const p = data.personal;
-            return [p.phone, p.email, [p.city, p.country].filter(Boolean).join(', '), p.linkedin, p.website, p.github].filter(
-            Boolean);
+            return [p.phone, p.email, [p.city, p.country].filter(Boolean).join(', '), p.linkedin, p.website, p.github, p.behance].filter(Boolean);
         }
 
         function zoom(delta) { data.zoom = Math.min(150, Math.max(40, (data.zoom || 80) + delta));
@@ -4210,43 +4278,174 @@
             </div>`;
         }
 
+        // ===== LANGUAGES RENDERING FOR PREVIEW =====
+        function getLanguagesHTML(d) {
+            if (!d.languages || d.languages.length === 0) return '';
+            return d.languages.map(l => `
+                <span style="display: inline-block; background: ${d.design.accent}12; border-radius: 12px; padding: 2px 10px; margin: 2px 4px 2px 0; font-size: 11px;">${esc(l.name)}</span>
+            `).join('');
+        }
+
+        // ===== HELPER FUNCTIONS FOR EXTRA SECTIONS =====
+        function getProjectsHTML(d) {
+            return d.projects.map(p => `
+                <div style="margin-bottom: 8px;">
+                    <div style="font-weight: 600; font-size: 12px;">${esc(p.name)}</div>
+                    ${p.description ? `<p style="font-size: 11px; margin-top: 2px;">${esc(p.description)}</p>` : ''}
+                    ${p.tech ? `<span style="font-size: 10px; color: var(--page-muted);">Tech: ${esc(p.tech)}</span>` : ''}
+                    ${p.link ? `<a href="${esc(p.link)}" style="font-size: 10px; display: inline-block; margin-top: 2px;">🔗 Project Link</a>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getCertificationsHTML(d) {
+            return d.certifications.map(c => `
+                <div style="margin-bottom: 6px;">
+                    <div style="font-weight: 600; font-size: 12px;">${esc(c.name)}</div>
+                    ${c.issuer ? `<span style="font-size: 11px;">${esc(c.issuer)}</span>` : ''}
+                    ${c.date ? `<span style="font-size: 10px; color: var(--page-muted); margin-left: 8px;">${esc(c.date)}</span>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getAwardsHTML(d) {
+            return d.awards.map(a => `
+                <div style="margin-bottom: 6px;">
+                    <div style="font-weight: 600; font-size: 12px;">${esc(a.name)}</div>
+                    ${a.issuer ? `<span style="font-size: 11px;">${esc(a.issuer)}</span>` : ''}
+                    ${a.year ? `<span style="font-size: 10px; color: var(--page-muted); margin-left: 8px;">${esc(a.year)}</span>` : ''}
+                    ${a.description ? `<p style="font-size: 11px; margin-top: 2px;">${esc(a.description)}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getPublicationsHTML(d) {
+            return d.publications.map(p => `
+                <div style="margin-bottom: 8px;">
+                    <div style="font-weight: 600; font-size: 12px;">${esc(p.title)}</div>
+                    ${p.authors ? `<span style="font-size: 11px;">${esc(p.authors)}</span>` : ''}
+                    ${p.journal ? `<span style="font-size: 11px;">${esc(p.journal)}</span>` : ''}
+                    ${p.year ? `<span style="font-size: 10px; color: var(--page-muted); margin-left: 8px;">${esc(p.year)}</span>` : ''}
+                    ${p.link ? `<a href="${esc(p.link)}" style="font-size: 10px; display: inline-block; margin-top: 2px;">🔗 Publication</a>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getVolunteerHTML(d) {
+            return d.volunteer.map(v => `
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 12px;">
+                        <span>${esc(v.organization)}</span>
+                        <span style="font-weight: normal; font-size: 11px; color: var(--page-muted);">${esc(v.start)} - ${esc(v.end || 'Present')}</span>
+                    </div>
+                    ${v.role ? `<div style="font-size: 11px; color: ${d.design.accent};">${esc(v.role)}</div>` : ''}
+                    ${v.description ? `<p style="font-size: 11px; margin-top: 2px;">${esc(v.description)}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getAchievementsHTML(d) {
+            return d.achievements.map(a => `
+                <div style="margin-bottom: 6px;">
+                    <div style="font-weight: 600; font-size: 12px;">${esc(a.name)}</div>
+                    ${a.date ? `<span style="font-size: 10px; color: var(--page-muted);">${esc(a.date)}</span>` : ''}
+                    ${a.description ? `<p style="font-size: 11px; margin-top: 2px;">${esc(a.description)}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getCoursesHTML(d) {
+            return d.courses.map(c => `
+                <div style="margin-bottom: 6px;">
+                    <div style="font-weight: 600; font-size: 12px;">${esc(c.name)}</div>
+                    ${c.provider ? `<span style="font-size: 11px;">${esc(c.provider)}</span>` : ''}
+                    ${c.date ? `<span style="font-size: 10px; color: var(--page-muted); margin-left: 8px;">${esc(c.date)}</span>` : ''}
+                    ${c.description ? `<p style="font-size: 11px; margin-top: 2px;">${esc(c.description)}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getHobbiesHTML(d) {
+            return d.hobbies.map(h => `
+                <span style="display: inline-block; background: ${d.design.accent}12; border-radius: 12px; padding: 2px 10px; margin: 2px 4px 2px 0; font-size: 11px;">${esc(h.name)}</span>
+            `).join('');
+        }
+
+        function getCustomSectionsHTML(d) {
+            return d.custom.map(c => `
+                <div style="margin-bottom: 10px;">
+                    <div style="font-weight: 600; font-size: 12px;">${esc(c.heading)}</div>
+                    ${c.content ? `<p style="font-size: 11px; margin-top: 2px;">${esc(c.content)}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getExtraSectionsHTML(d) {
+            let html = '';
+            if (d.languages && d.languages.length) html += buildSection(d, 'Languages', getLanguagesHTML(d));
+            if (d.projects && d.projects.length) html += buildSection(d, 'Projects', getProjectsHTML(d));
+            if (d.certifications && d.certifications.length) html += buildSection(d, 'Certifications', getCertificationsHTML(d));
+            if (d.awards && d.awards.length) html += buildSection(d, 'Awards & Honors', getAwardsHTML(d));
+            if (d.publications && d.publications.length) html += buildSection(d, 'Publications', getPublicationsHTML(d));
+            if (d.volunteer && d.volunteer.length) html += buildSection(d, 'Volunteer Experience', getVolunteerHTML(d));
+            if (d.achievements && d.achievements.length) html += buildSection(d, 'Achievements', getAchievementsHTML(d));
+            if (d.courses && d.courses.length) html += buildSection(d, 'Courses & Training', getCoursesHTML(d));
+            if (d.hobbies && d.hobbies.length) html += buildSection(d, 'Hobbies & Interests', getHobbiesHTML(d));
+            if (d.custom && d.custom.length) html += buildSection(d, 'Custom Sections', getCustomSectionsHTML(d));
+            return html;
+        }
+
         /* ============================================================
-           TEMPLATE 1: ATS PROFESSIONAL
+           TEMPLATE 1: ATS PROFESSIONAL — CLEAN, SINGLE-COLUMN, ATS-OPTIMIZED
            ============================================================ */
         TemplateRegistry.ats = function(d) {
-            return `<div style="padding: 44px 48px; font-family: Arial, sans-serif; font-size: 11.5px; line-height: 1.4; color: #1a1a1a; background: #ffffff;">
+            return `<div style="padding: 44px 48px; font-family: 'Segoe UI', Arial, sans-serif; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #1a1a1a; background: #ffffff;">
                 <div style="text-align: center; margin-bottom: 18px; border-bottom: 2px solid ${d.design.accent}; padding-bottom: 14px;">
-                    <h1 style="font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0; color: #111;">${esc(d.personal.name || 'Your Name')}</h1>
+                    <h1 style="font-size: 28px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; color: #111;">${esc(d.personal.name || 'Your Name')}</h1>
                     <div style="font-size: 14px; font-weight: 600; color: ${d.design.accent}; margin: 2px 0 4px;">${esc(d.personal.title || 'Professional Title')}</div>
                     <div style="font-size: 10.5px; color: #444; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">${getContactHTML(d, ' | ')}</div>
                 </div>
                 ${d.summary ? `<div style="margin-bottom: 14px;"><p style="font-size: 12px; line-height: 1.5; text-align: justify;">${esc(d.summary)}</p></div>` : ''}
-                ${d.experience.length ? `<div style="margin-bottom: 14px;"><h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: ${d.design.accent}; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin-bottom: 8px;">Experience</h3>${getExperienceHTML(d)}</div>` : ''}
+                ${d.experience.length ? `<div style="margin-bottom: 14px;"><h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: ${d.design.accent}; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin-bottom: 8px;">Professional Experience</h3>${getExperienceHTML(d)}</div>` : ''}
                 ${d.education.length ? `<div style="margin-bottom: 14px;"><h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: ${d.design.accent}; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin-bottom: 8px;">Education</h3>${getEducationHTML(d)}</div>` : ''}
-                ${d.skills.length ? `<div><h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: ${d.design.accent}; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin-bottom: 8px;">Skills</h3>${getSkillsChips(d, 'outline')}</div>` : ''}
+                ${d.skills.length ? `<div><h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: ${d.design.accent}; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin-bottom: 8px;">Core Competencies</h3>${getSkillsChips(d, 'outline')}</div>` : ''}
+                ${getExtraSectionsHTML(d)}
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 2: MODERN CORPORATE — TWO-COLUMN WITH LEFT SIDEBAR
+           ============================================================ */
         TemplateRegistry.corporate = function(d) {
-            return `<div style="padding: 40px 44px; font-family: ${d.design.font}; font-size: ${d.design.fontSize}px; line-height: 1.5; color: var(--page-text); background: #fff;">
-                <div style="background: ${d.design.accent}08; padding: 24px 28px; border-radius: 8px; margin-bottom: 24px; border-left: 6px solid ${d.design.accent};">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                        <div>
-                            <h1 style="font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin: 0; color: #1a1a2e;">${esc(d.personal.name || 'Your Name')}</h1>
-                            <h3 style="font-size: 14px; font-weight: 600; color: ${d.design.accent}; margin: 4px 0 0;">${esc(d.personal.title || 'Professional Title')}</h3>
-                        </div>
-                        <div style="text-align: right; font-size: 11px; color: var(--page-muted); line-height: 1.6;">${getContactHTML(d, '<br>')}</div>
+            const sidebarWidth = 32;
+            const mainWidth = 100 - sidebarWidth;
+            const contact = contactLine();
+            return `<div style="display:flex; font-family: ${d.design.font}; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; background: #fff; min-height: 1123px;">
+                <div style="width: ${sidebarWidth}%; background: ${d.design.accent}08; padding: 32px 20px; border-right: 2px solid ${d.design.accent};">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <h1 style="font-size: 24px; font-weight: 800; margin: 0; color: #1a1a2e;">${esc(d.personal.name || 'Your Name')}</h1>
+                        <div style="font-size: 13px; font-weight: 600; color: ${d.design.accent}; margin-top: 4px;">${esc(d.personal.title || 'Professional Title')}</div>
                     </div>
+                    <div style="margin-bottom: 20px;"><h4 style="font-size: 11px; text-transform: uppercase; color: ${d.design.accent}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Contact</h4>
+                        ${contact.map(c => `<div style="font-size: 11px; margin-bottom: 4px;">${esc(c)}</div>`).join('')}
+                    </div>
+                    ${d.skills.length ? `<div style="margin-bottom: 20px;"><h4 style="font-size: 11px; text-transform: uppercase; color: ${d.design.accent}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Skills</h4>${getSkillsChips(d, 'filled')}</div>` : ''}
+                    ${d.languages && d.languages.length ? `<div><h4 style="font-size: 11px; text-transform: uppercase; color: ${d.design.accent}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Languages</h4>${getLanguagesHTML(d)}</div>` : ''}
                 </div>
-                ${d.summary ? `<div style="margin-bottom: 18px; padding: 0 4px;"><p style="font-size: 12.5px; line-height: 1.6; text-align: justify;">${esc(d.summary)}</p></div>` : ''}
-                ${d.experience.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Professional Experience', getExperienceHTML(d), 'underline')}</div>` : ''}
-                ${d.education.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Education', getEducationHTML(d), 'underline')}</div>` : ''}
-                ${d.skills.length ? `<div>${buildSection(d, 'Core Competencies', getSkillsChips(d, 'filled'), 'underline')}</div>` : ''}
+                <div style="width: ${mainWidth}%; padding: 32px 32px;">
+                    ${d.summary ? `<div style="margin-bottom: 18px;"><p style="font-size: 12.5px; line-height: 1.6; text-align: justify;">${esc(d.summary)}</p></div>` : ''}
+                    ${d.experience.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Professional Experience', getExperienceHTML(d))}</div>` : ''}
+                    ${d.education.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Education', getEducationHTML(d))}</div>` : ''}
+                    ${getExtraSectionsHTML(d)}
+                </div>
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 3: EXECUTIVE PREMIUM — LUXURY, CLASSIC, SERIF
+           ============================================================ */
         TemplateRegistry.executive = function(d) {
-            return `<div style="padding: 50px 52px; font-family: Georgia, serif; font-size: 13px; line-height: 1.6; color: #1a1a1a; background: #fcfcf9; border-top: 8px solid ${d.design.accent};">
+            return `<div style="padding: 50px 52px; font-family: 'Georgia', 'Times New Roman', serif; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #1a1a1a; background: #fcfcf9; border-top: 8px solid ${d.design.accent};">
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid ${d.design.accent}; padding-bottom: 18px; margin-bottom: 24px;">
                     <div>
                         <h1 style="font-size: 38px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; margin: 0; color: #1a1a1a;">${esc(d.personal.name || 'Your Name')}</h1>
@@ -4255,14 +4454,18 @@
                     <div style="text-align: right; font-size: 11px; color: #555; line-height: 1.8;">${getContactHTML(d, '<br>')}</div>
                 </div>
                 ${d.summary ? `<div style="margin-bottom: 22px; padding: 0 2px;"><p style="font-size: 13px; line-height: 1.7; font-style: italic; color: #333;">${esc(d.summary)}</p></div>` : ''}
-                ${d.experience.length ? `<div style="margin-bottom: 22px;">${buildSection(d, 'Executive Leadership', getExperienceHTML(d), 'minimal')}</div>` : ''}
-                ${d.education.length ? `<div style="margin-bottom: 22px;">${buildSection(d, 'Education & Credentials', getEducationHTML(d), 'minimal')}</div>` : ''}
-                ${d.skills.length ? `<div>${buildSection(d, 'Strategic Capabilities', getSkillsChips(d, 'filled'), 'minimal')}</div>` : ''}
+                ${d.experience.length ? `<div style="margin-bottom: 22px;">${buildSection(d, 'Executive Leadership', getExperienceHTML(d))}</div>` : ''}
+                ${d.education.length ? `<div style="margin-bottom: 22px;">${buildSection(d, 'Education & Credentials', getEducationHTML(d))}</div>` : ''}
+                ${d.skills.length ? `<div>${buildSection(d, 'Strategic Capabilities', getSkillsChips(d, 'filled'))}</div>` : ''}
+                ${getExtraSectionsHTML(d)}
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 4: MINIMAL SCANDINAVIAN — CENTERED, LIGHT, SPACIOUS
+           ============================================================ */
         TemplateRegistry.scandinavian = function(d) {
-            return `<div style="padding: 36px 40px; max-width: 680px; margin: 0 auto; font-family: 'Inter', -apple-system, sans-serif; font-size: 12px; line-height: 1.5; color: #2d2d2d; background: #fff;">
+            return `<div style="padding: 36px 40px; max-width: 680px; margin: 0 auto; font-family: 'Inter', -apple-system, sans-serif; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #2d2d2d; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.03);">
                 <div style="text-align: center; padding-bottom: 16px; border-bottom: 1px solid #e8e8e8; margin-bottom: 20px;">
                     <h1 style="font-size: 28px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; margin: 0; color: #1a1a1a;">${esc(d.personal.name || 'Your Name')}</h1>
                     <div style="font-size: 13px; font-weight: 400; color: ${d.design.accent}; margin: 4px 0 6px;">${esc(d.personal.title || 'Professional Title')}</div>
@@ -4272,11 +4475,15 @@
                 ${d.experience.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Experience', getExperienceHTML(d), 'minimal')}</div>` : ''}
                 ${d.education.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Education', getEducationHTML(d), 'minimal')}</div>` : ''}
                 ${d.skills.length ? `<div>${buildSection(d, 'Skills', getSkillsChips(d, 'outline'), 'minimal')}</div>` : ''}
+                ${getExtraSectionsHTML(d)}
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 5: SOFTWARE DEVELOPER — DARK TERMINAL STYLE
+           ============================================================ */
         TemplateRegistry.developer = function(d) {
-            return `<div style="padding: 36px 40px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.5; color: #c8d6e5; background: #0d1117; min-height: 1123px;">
+            return `<div style="padding: 36px 40px; font-family: 'Courier New', 'Fira Code', monospace; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #c8d6e5; background: #0d1117; min-height: 1123px;">
                 <div style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 20px 24px; margin-bottom: 22px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                         <div>
@@ -4290,14 +4497,18 @@
                 ${d.experience.length ? `<div style="margin-bottom: 18px;">${buildSection(d, '// Deployments', getExperienceHTML(d).replace(/<p/g, '<p style="color:#c8d6e5;"'), 'solid')}</div>` : ''}
                 ${d.education.length ? `<div style="margin-bottom: 18px;">${buildSection(d, '// Compilation', getEducationHTML(d), 'solid')}</div>` : ''}
                 ${d.skills.length ? `<div>${buildSection(d, '// Stack Array', d.skills.map(s => `<span style="display:inline-block;background:#21262d;border:1px solid #30363d;border-radius:4px;padding:2px 10px;margin:2px 4px 2px 0;font-size:11px;color:#58a6ff;">${esc(s.name)}</span>`).join(''), 'solid')}</div>` : ''}
+                ${getExtraSectionsHTML(d)}
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 6: CREATIVE DESIGNER — TWO-COLUMN WITH DARK SIDEBAR
+           ============================================================ */
         TemplateRegistry['creative-designer'] = function(d) {
             const photoHtml = d.personal.photo ?
                 `<div style="width:120px;height:120px;border-radius:50%;border:3px solid ${d.design.accent};margin:0 auto 16px;overflow:hidden;"><img src="${d.personal.photo}" style="width:100%;height:100%;object-fit:cover;"></div>` :
                 '';
-            return `<div style="display:flex;min-height:1123px;font-family:${d.design.font};font-size:${d.design.fontSize}px;background:#fff;">
+            return `<div style="display:flex;min-height:1123px;font-family:${d.design.font};font-size:${d.design.fontSize}px;line-height:${d.design.lineHeight};letter-spacing:${d.design.letterSpacing}px;background:#fff;">
                 <div style="width:34%;background:#1a1a2e;color:#e0e0e0;padding:32px 22px;display:flex;flex-direction:column;gap:22px;">
                     ${photoHtml}
                     <div style="text-align:center;">
@@ -4306,35 +4517,48 @@
                     </div>
                     <div><h4 style="font-size:10px;text-transform:uppercase;color:#888;border-bottom:1px solid #333;padding-bottom:4px;margin-bottom:10px;letter-spacing:1px;">Contact</h4><div style="font-size:11px;line-height:1.8;">${getContactHTML(d, '<br>')}</div></div>
                     ${d.skills.length ? `<div><h4 style="font-size:10px;text-transform:uppercase;color:#888;border-bottom:1px solid #333;padding-bottom:4px;margin-bottom:10px;letter-spacing:1px;">Expertise</h4><div style="display:flex;flex-direction:column;gap:4px;">${d.skills.map(s => `<div style="display:flex;justify-content:space-between;font-size:11px;"><span>${esc(s.name)}</span><span style="color:${d.design.accent};">★ ${s.level}</span></div>`).join('')}</div></div>` : ''}
+                    ${d.languages && d.languages.length ? `<div><h4 style="font-size:10px;text-transform:uppercase;color:#888;border-bottom:1px solid #333;padding-bottom:4px;margin-bottom:10px;letter-spacing:1px;">Languages</h4><div style="display:flex;flex-direction:column;gap:2px;">${d.languages.map(l => `<span style="font-size:11px;">${esc(l.name)}</span>`).join('')}</div></div>` : ''}
                 </div>
                 <div style="width:66%;padding:40px 36px;display:flex;flex-direction:column;gap:18px;color:#1a1a2e;">
                     ${d.summary ? `<div><h3 style="font-size:13px;font-weight:700;text-transform:uppercase;color:${d.design.accent};border-bottom:2px solid ${d.design.accent};padding-bottom:4px;margin-bottom:10px;">Profile</h3><p style="font-size:12px;line-height:1.6;">${esc(d.summary)}</p></div>` : ''}
                     ${d.experience.length ? `<div><h3 style="font-size:13px;font-weight:700;text-transform:uppercase;color:${d.design.accent};border-bottom:2px solid ${d.design.accent};padding-bottom:4px;margin-bottom:10px;">Experience</h3>${getExperienceHTML(d)}</div>` : ''}
                     ${d.education.length ? `<div><h3 style="font-size:13px;font-weight:700;text-transform:uppercase;color:${d.design.accent};border-bottom:2px solid ${d.design.accent};padding-bottom:4px;margin-bottom:10px;">Education</h3>${getEducationHTML(d)}</div>` : ''}
+                    ${getExtraSectionsHTML(d)}
                 </div>
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 7: FINANCE & BANKING — TWO-COLUMN WITH RIGHT SIDEBAR
+           ============================================================ */
         TemplateRegistry.finance = function(d) {
-            return `<div style="padding: 42px 46px; font-family: 'Inter', -apple-system, sans-serif; font-size: 12px; line-height: 1.5; color: #1a1a1a; background: #fcfcfc; border: 1px solid #e8e8e8;">
-                <div style="border-bottom: 3px solid ${d.design.accent}; padding-bottom: 16px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                        <div>
-                            <h1 style="font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin: 0; color: #0a0a1a;">${esc(d.personal.name || 'Your Name')}</h1>
-                            <h3 style="font-size: 14px; font-weight: 500; color: ${d.design.accent}; margin: 3px 0 0;">${esc(d.personal.title || 'Professional Title')}</h3>
-                        </div>
-                        <div style="text-align: right; font-size: 10.5px; color: #555; line-height: 1.7;">${getContactHTML(d, '<br>')}</div>
+            const sidebarWidth = 30;
+            const mainWidth = 100 - sidebarWidth;
+            return `<div style="display:flex; font-family: 'Inter', -apple-system, sans-serif; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; background: #fcfcfc; border: 1px solid #e8e8e8; min-height: 1123px;">
+                <div style="width: ${mainWidth}%; padding: 40px 36px; border-right: 1px solid #e8e8e8;">
+                    <div style="border-bottom: 3px solid ${d.design.accent}; padding-bottom: 16px; margin-bottom: 20px;">
+                        <h1 style="font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin: 0; color: #0a0a1a;">${esc(d.personal.name || 'Your Name')}</h1>
+                        <h3 style="font-size: 14px; font-weight: 500; color: ${d.design.accent}; margin: 3px 0 0;">${esc(d.personal.title || 'Professional Title')}</h3>
                     </div>
+                    ${d.summary ? `<div style="margin-bottom: 16px; padding: 0 2px;"><p style="font-size: 12px; line-height: 1.6; text-align: justify;">${esc(d.summary)}</p></div>` : ''}
+                    ${d.experience.length ? `<div style="margin-bottom: 16px;">${buildSection(d, 'Professional Experience', getExperienceHTML(d), 'underline')}</div>` : ''}
+                    ${d.education.length ? `<div style="margin-bottom: 16px;">${buildSection(d, 'Education', getEducationHTML(d), 'underline')}</div>` : ''}
+                    ${getExtraSectionsHTML(d)}
                 </div>
-                ${d.summary ? `<div style="margin-bottom: 16px; padding: 0 2px;"><p style="font-size: 12px; line-height: 1.6; text-align: justify;">${esc(d.summary)}</p></div>` : ''}
-                ${d.experience.length ? `<div style="margin-bottom: 16px;">${buildSection(d, 'Professional Experience', getExperienceHTML(d), 'underline')}</div>` : ''}
-                ${d.education.length ? `<div style="margin-bottom: 16px;">${buildSection(d, 'Education', getEducationHTML(d), 'underline')}</div>` : ''}
-                ${d.skills.length ? `<div>${buildSection(d, 'Core Competencies', getSkillsChips(d, 'filled'), 'underline')}</div>` : ''}
+                <div style="width: ${sidebarWidth}%; background: ${d.design.accent}06; padding: 40px 24px;">
+                    <div style="margin-bottom: 20px;"><h4 style="font-size: 11px; text-transform: uppercase; color: ${d.design.accent}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Contact</h4>
+                        ${contactLine().map(c => `<div style="font-size: 11px; margin-bottom: 4px;">${esc(c)}</div>`).join('')}
+                    </div>
+                    ${d.skills.length ? `<div><h4 style="font-size: 11px; text-transform: uppercase; color: ${d.design.accent}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Skills</h4>${getSkillsChips(d, 'filled')}</div>` : ''}
+                </div>
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 8: HEALTHCARE PROFESSIONAL — SOFT, MEDICAL ACCENT
+           ============================================================ */
         TemplateRegistry.healthcare = function(d) {
-            return `<div style="padding: 40px 44px; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.5; color: #1a2a3a; background: #f8fafc; border-radius: 4px;">
+            return `<div style="padding: 40px 44px; font-family: 'Inter', sans-serif; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #1a2a3a; background: #f8fafc; border-radius: 4px;">
                 <div style="background: #e6f0fa; padding: 20px 24px; border-radius: 8px; margin-bottom: 22px; border-left: 6px solid ${d.design.accent};">
                     <h1 style="font-size: 28px; font-weight: 700; margin: 0; color: #0a1a2a;">${esc(d.personal.name || 'Your Name')}</h1>
                     <h3 style="font-size: 14px; font-weight: 500; color: ${d.design.accent}; margin: 4px 0 6px;">${esc(d.personal.title || 'Healthcare Professional')}</h3>
@@ -4344,11 +4568,15 @@
                 ${d.experience.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Clinical Experience', getExperienceHTML(d), 'underline')}</div>` : ''}
                 ${d.education.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Education & Training', getEducationHTML(d), 'underline')}</div>` : ''}
                 ${d.skills.length ? `<div>${buildSection(d, 'Clinical Skills', getSkillsChips(d, 'filled'), 'underline')}</div>` : ''}
+                ${getExtraSectionsHTML(d)}
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 9: STUDENT / FRESHER — ACADEMIC, CENTERED, SIMPLE
+           ============================================================ */
         TemplateRegistry.student = function(d) {
-            return `<div style="padding: 34px 38px; max-width: 640px; margin: 0 auto; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.5; color: #222; background: #fff;">
+            return `<div style="padding: 34px 38px; max-width: 640px; margin: 0 auto; font-family: 'Inter', sans-serif; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #222; background: #fff;">
                 <div style="text-align: center; padding-bottom: 14px; border-bottom: 2px solid ${d.design.accent}; margin-bottom: 18px;">
                     <h1 style="font-size: 26px; font-weight: 700; margin: 0; color: #111;">${esc(d.personal.name || 'Your Name')}</h1>
                     <div style="font-size: 13px; font-weight: 500; color: ${d.design.accent}; margin: 4px 0;">${esc(d.personal.title || 'Student')}</div>
@@ -4358,12 +4586,15 @@
                 ${d.education.length ? `<div style="margin-bottom: 16px;">${buildSection(d, 'Education', getEducationHTML(d), 'minimal')}</div>` : ''}
                 ${d.experience.length ? `<div style="margin-bottom: 16px;">${buildSection(d, 'Internships / Experience', getExperienceHTML(d), 'minimal')}</div>` : ''}
                 ${d.skills.length ? `<div>${buildSection(d, 'Skills', getSkillsChips(d, 'outline'), 'minimal')}</div>` : ''}
-                ${d.projects.length ? `<div style="margin-top:16px;">${buildSection(d, 'Projects', d.projects.map(p => `<div><strong>${esc(p.name)}</strong><p style="font-size:11px;">${esc(p.description)}</p></div>`).join(''), 'minimal')}</div>` : ''}
+                ${getExtraSectionsHTML(d)}
             </div>`;
         };
 
+        /* ============================================================
+           TEMPLATE 10: TIMELINE RESUME — CHRONOLOGICAL, VISUAL, LEFT-BORDER
+           ============================================================ */
         TemplateRegistry.timeline = function(d) {
-            return `<div style="padding: 40px 44px; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.5; color: #1a1a2e; background: #fafafa;">
+            return `<div style="padding: 40px 44px; font-family: 'Inter', sans-serif; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #1a1a2e; background: #fafafa;">
                 <div style="border-bottom: 2px solid ${d.design.accent}; padding-bottom: 14px; margin-bottom: 22px;">
                     <h1 style="font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin: 0; color: #0a0a1a;">${esc(d.personal.name || 'Your Name')}</h1>
                     <h3 style="font-size: 14px; font-weight: 500; color: ${d.design.accent}; margin: 3px 0 0;">${esc(d.personal.title || 'Professional Title')}</h3>
@@ -4378,11 +4609,32 @@
                 `).join('')}</div>` : ''}
                 ${d.education.length ? `<div style="margin-bottom: 18px;">${buildSection(d, 'Education', getEducationHTML(d), 'minimal')}</div>` : ''}
                 ${d.skills.length ? `<div>${buildSection(d, 'Skills', getSkillsChips(d, 'filled'), 'minimal')}</div>` : ''}
+                ${getExtraSectionsHTML(d)}
+            </div>`;
+        };
+
+        /* ============================================================
+           MODERN TEMPLATE (Default) — MAGAZINE-STYLE, LARGE HEADER
+           ============================================================ */
+        TemplateRegistry.modern = function(d) {
+            return `<div style="padding: 0; font-family: ${d.design.font}; font-size: ${d.design.fontSize}px; line-height: ${d.design.lineHeight}; letter-spacing: ${d.design.letterSpacing}px; color: #1a1a1a; background: #ffffff;">
+                <div style="background: ${d.design.accent}08; padding: 40px 44px 28px; border-bottom: 4px solid ${d.design.accent};">
+                    <h1 style="font-size: 38px; font-weight: 800; letter-spacing: -1px; margin: 0; color: #1a1a1a;">${esc(d.personal.name || 'Your Name')}</h1>
+                    <h3 style="font-size: 18px; font-weight: 400; color: ${d.design.accent}; margin: 6px 0 0; letter-spacing: 0.5px;">${esc(d.personal.title || 'Professional Title')}</h3>
+                    <div style="margin-top: 14px; font-size: 11px; color: #555; display: flex; flex-wrap: wrap; gap: 12px;">${getContactHTML(d, ' · ')}</div>
+                </div>
+                <div style="padding: 28px 44px 40px;">
+                    ${d.summary ? `<div style="margin-bottom: 24px; background: #f8f8f8; padding: 16px 20px; border-radius: 6px;"><p style="font-size: 13px; line-height: 1.7; margin: 0;">${esc(d.summary)}</p></div>` : ''}
+                    ${d.experience.length ? `<div style="margin-bottom: 24px;">${buildSection(d, 'Experience', getExperienceHTML(d), 'underline')}</div>` : ''}
+                    ${d.education.length ? `<div style="margin-bottom: 24px;">${buildSection(d, 'Education', getEducationHTML(d), 'underline')}</div>` : ''}
+                    ${d.skills.length ? `<div>${buildSection(d, 'Skills', getSkillsChips(d, 'filled'), 'underline')}</div>` : ''}
+                    ${getExtraSectionsHTML(d)}
+                </div>
             </div>`;
         };
 
         TemplateRegistry.fallback = function(d) {
-            return `<div style="padding: 40px; font-family: ${d.design.font || "'Inter',sans-serif"}; font-size: ${d.design.fontSize || 13}px; color: var(--page-text);">
+            return `<div style="padding: 40px; font-family: ${d.design.font || "'Inter',sans-serif"}; font-size: ${d.design.fontSize || 13}px; line-height: ${d.design.lineHeight || 1.5}; color: var(--page-text);">
                 <div style="border-bottom: 3px solid ${d.design.accent || '#2563eb'}; padding-bottom: 20px; text-align: ${d.design.headerAlign || 'left'};">
                     <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">${esc(d.personal.name || 'Your Name')}</h1>
                     <h3 style="color: ${d.design.accent || '#2563eb'}; font-weight: 500; font-size: 14px;">${esc(d.personal.title || 'Professional')}</h3>
@@ -4395,6 +4647,7 @@
                     ${d.experience.length ? `<div><h3 style="font-size: 13px; font-weight: 700; color: ${d.design.accent || '#2563eb'}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Experience</h3>${getExperienceHTML(d)}</div>` : ''}
                     ${d.education.length ? `<div><h3 style="font-size: 13px; font-weight: 700; color: ${d.design.accent || '#2563eb'}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Education</h3>${getEducationHTML(d)}</div>` : ''}
                     ${d.skills.length ? `<div><h3 style="font-size: 13px; font-weight: 700; color: ${d.design.accent || '#2563eb'}; border-bottom: 1px solid var(--page-line); padding-bottom: 4px; margin-bottom: 8px;">Skills</h3>${getSkillsChips(d)}</div>` : ''}
+                    ${getExtraSectionsHTML(d)}
                 </div>
             </div>`;
         };
@@ -4407,7 +4660,6 @@
             let templateFn = TemplateRegistry[d.design.template];
             if (!templateFn) {
                 console.warn(`[Resume Builder Pro] Template "${d.design.template}" not found. Falling back to "modern".`);
-                showToast('⚠️ Unable to load the selected template. Loading default template.');
                 d.design.template = 'modern';
                 queueSave();
                 templateFn = TemplateRegistry.modern;
@@ -4438,6 +4690,26 @@
                     return `<div style="padding:20px 30px 10px;"><h3>Education</h3>${data.education.map(e=>`<div><strong>${esc(e.degree)}</strong> - ${esc(e.school)}</div>`).join('')}</div>`;
                 } else if (sec.id === 'skills' && data.skills.length) {
                     return `<div style="padding:20px 30px 10px;"><h3>Skills</h3>${getSkillsChips(data)}</div>`;
+                } else if (sec.id === 'languages' && data.languages && data.languages.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Languages</h3>${getLanguagesHTML(data)}</div>`;
+                } else if (sec.id === 'projects' && data.projects && data.projects.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Projects</h3>${getProjectsHTML(data)}</div>`;
+                } else if (sec.id === 'certifications' && data.certifications && data.certifications.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Certifications</h3>${getCertificationsHTML(data)}</div>`;
+                } else if (sec.id === 'awards' && data.awards && data.awards.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Awards</h3>${getAwardsHTML(data)}</div>`;
+                } else if (sec.id === 'publications' && data.publications && data.publications.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Publications</h3>${getPublicationsHTML(data)}</div>`;
+                } else if (sec.id === 'volunteer' && data.volunteer && data.volunteer.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Volunteer</h3>${getVolunteerHTML(data)}</div>`;
+                } else if (sec.id === 'achievements' && data.achievements && data.achievements.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Achievements</h3>${getAchievementsHTML(data)}</div>`;
+                } else if (sec.id === 'courses' && data.courses && data.courses.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Courses</h3>${getCoursesHTML(data)}</div>`;
+                } else if (sec.id === 'hobbies' && data.hobbies && data.hobbies.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Hobbies</h3>${getHobbiesHTML(data)}</div>`;
+                } else if (sec.id === 'custom' && data.custom && data.custom.length) {
+                    return `<div style="padding:20px 30px 10px;"><h3>Custom Sections</h3>${getCustomSectionsHTML(data)}</div>`;
                 }
                 return '';
             }).join('');
@@ -4445,35 +4717,65 @@
             return headHTML + `<div>${bodySections}</div>`;
         }
 
+        // ===== ADD PAGE BREAK FUNCTION — creates a new blank page =====
+        function addPageBreak() {
+            if (!data.pageBreaks) data.pageBreaks = [];
+            data.pageBreaks.push({ id: 'pb_' + Date.now() });
+            data.updatedAt = Date.now();
+            queueSave();
+            renderPreview();
+            showToast('📄 New blank page added.');
+            pushHistory();
+        }
+
+        // ===== RENDER PREVIEW — supports multiple pages =====
         function renderPreview() {
-            const page = document.getElementById('resumePage');
+            const container = document.getElementById('previewPagesContainer');
+            if (!container) return;
+
             const template = data.design.template || 'modern';
+            const pageHeight = data.design.paperSize === 'Letter' ? 1056 : 1123;
 
-            const html = renderTemplatePipeline(data);
+            // Generate the full content (without page break markers)
+            let fullContent = renderTemplatePipeline(data);
+            let pageContents = [];
 
-            page.className = 'page tpl-' + template;
-            page.innerHTML = html;
+            const breakCount = (data.pageBreaks && data.pageBreaks.length) || 0;
 
-            requestAnimationFrame(() => {
-                const totalHeight = page.scrollHeight;
-                const pageHeight = data.design.paperSize === 'Letter' ? 1056 : 1123;
-                const pageCount = Math.max(1, Math.ceil(totalHeight / pageHeight));
-                page.querySelectorAll('.page-break-line').forEach(el => el.remove());
-                for (let i = 1; i < pageCount; i++) {
-                    const line = document.createElement('div');
-                    line.className = 'page-break-line';
-                    line.style.top = (pageHeight * i) + 'px';
-                    line.innerHTML = `<span>Segment Partition Break Threshold Point ${i+1}</span>`;
-                    page.appendChild(line);
+            if (breakCount === 0) {
+                pageContents = [fullContent];
+            } else {
+                // First page: full content
+                pageContents = [fullContent];
+                // Additional pages: blank (just the template header)
+                for (let i = 0; i < breakCount; i++) {
+                    let blankPage = `<div style="padding: 40px 44px; font-family: ${data.design.font}; font-size: ${data.design.fontSize}px; line-height: ${data.design.lineHeight}; color: #1a1a1a; background: #ffffff; min-height: ${pageHeight}px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #999; font-size: 14px; text-align: center;">`;
+                    blankPage += `<div style="border-bottom: 3px solid ${data.design.accent}; padding-bottom: 20px; margin-bottom: 24px; width: 100%;">`;
+                    blankPage += `<h1 style="font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin: 0; color: #1a1a1a;">${esc(data.personal.name || 'Your Name')}</h1>`;
+                    blankPage += `<h3 style="font-size: 16px; font-weight: 500; color: ${data.design.accent}; margin: 4px 0 0;">${esc(data.personal.title || 'Professional Title')}</h3>`;
+                    blankPage += `<div style="font-size: 11px; color: #555; margin-top: 8px;">${getContactHTML(data, ' · ')}</div>`;
+                    blankPage += `</div>`;
+                    blankPage += `<div style="padding: 40px 0; color: #aaa; font-style: italic;">— Blank Page —</div>`;
+                    blankPage += `</div>`;
+                    pageContents.push(blankPage);
                 }
-                page.style.minHeight = (pageHeight * pageCount) + 'px';
-                document.getElementById('pageCountBadge').textContent = pageCount + ' Document Allocation Page Layer' + (
-                    pageCount > 1 ? 's' : '');
-                document.getElementById('wordCountBadge').textContent = '📄 ' + (page.textContent.split(/\s+/).filter(Boolean)
-                    .length) + ' Structural Words';
-                updateATSFloat();
-                computeAnalytics();
-            });
+            }
+
+            container.innerHTML = pageContents.map((content, index) => {
+                const pageNum = index + 1;
+                return `
+                    <div class="page" style="min-height: ${pageHeight}px; position: relative;">
+                        ${content}
+                        <div style="position: absolute; bottom: 20px; right: 30px; font-size: 10px; color: var(--page-muted); opacity: 0.5;">${pageNum}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('pageCountBadge').textContent = pageContents.length + ' page' + (pageContents.length > 1 ? 's' : '');
+            document.getElementById('wordCountBadge').textContent = '📄 ' + (fullContent.split(/\s+/).filter(Boolean).length) + ' words';
+
+            updateATSFloat();
+            computeAnalytics();
             updateCompletionBadges();
         }
 
@@ -4514,6 +4816,9 @@
                 start: '2021', end: 'Present', description: 'Managed architecture pipelines delivering validated high availability system updates.' }];
             data.education = [{ school: 'Delhi Technical University', degree: 'Bachelor of Engineering Matrix Strategy',
                 field: 'Systems Logic', score: '9.2', start: '2016', end: '2020' }];
+            data.projects = [{ name: 'AI Resume Parser', description: 'Built a parser that extracts structured data from resumes using NLP.', tech: 'Python, spaCy' }];
+            data.certifications = [{ name: 'AWS Solutions Architect', issuer: 'Amazon', date: '2023' }];
+            data.languages = [{ name: 'English', level: 'Native' }, { name: 'Spanish', level: 'Professional' }];
             hydrateForm();
             renderForms();
             renderPreview();
@@ -4798,6 +5103,7 @@
                         saveProfiles(allProfiles);
                     }
                 }
+                if (!data.pageBreaks) data.pageBreaks = [];
             }
             saveData();
             renderPreview();
@@ -4841,6 +5147,7 @@
                 switchTab,
                 onInput,
                 onPhoto,
+                clearPhoto,
                 addEntry,
                 removeEntry,
                 duplicateEntry,
@@ -4880,7 +5187,8 @@
                 exportCoverLetterPDF,
                 importResume,
                 confirmImport,
-                closeImportReview
+                closeImportReview,
+                addPageBreak
             });
             updateUndoRedoButtons();
         }
